@@ -1,99 +1,329 @@
-# School of Engineering and Technology (SoET) Website
+# School of Engineering and Technology (SoET) — Official Website
 
-Welcome to the official repository for the **School of Engineering and Technology (SoET)**, Samrat Vikramaditya Vishwavidyalaya, Ujjain. 
-
-This repository houses the modern, decoupled **MERN stack** (MongoDB, Express, React, Node.js) implementation of the college website. It was recently migrated from a monolithic static HTML/CSS structure into a dynamic, highly performant web application.
+Full-stack MERN web application for the **School of Engineering & Technology, Samrat Vikramaditya Vishwavidyalaya, Ujjain**.
 
 ---
 
 ## 🏗️ Architecture
 
-The project is structured as a fully decoupled monorepo:
+| Layer | Stack |
+|-------|-------|
+| Frontend | React 18 + Vite + React Router v7 |
+| Backend API | Node.js 20 + Express 5 + Socket.IO 4 |
+| Database | MongoDB (Mongoose ODM) |
+| Real-time | Socket.IO (WebSocket) |
+| Auth | JWT (Bearer token / cookie) |
+| File Storage | Multer (local) / Cloudflare R2 (production) |
+| Security | Helmet, CORS, express-rate-limit, Zod validation |
 
-### 1. Frontend (`/soet-client`)
-- **Framework:** React + Vite
-- **Routing:** React Router v6
-- **Styling:** Vanilla CSS (Global Styles)
-- **Security:** Cloudflare Turnstile (CAPTCHA)
-- **Hosting Target:** Cloudflare Pages (Static Edge Network)
+### Monorepo Structure
 
-### 2. Backend API (`/soet-api`)
-- **Framework:** Node.js + Express
-- **Database:** MongoDB Atlas (Mongoose ORM)
-- **Storage:** Cloudflare R2 via AWS SDK v3 (S3 API)
-- **Security:** Helmet, Express Rate Limiter, strict CORS, JWT Authentication
-- **Hosting Target:** Render (Web Service)
+```
+School-Of-Engineering-and-Technology-Official-Website/
+├── soet-api/              # Express REST API + Socket.IO
+│   ├── src/
+│   │   ├── app.js          # Express app (middleware stack)
+│   │   ├── server.js       # HTTP server + Socket.IO init
+│   │   ├── socket.js       # Socket.IO event handlers
+│   │   ├── config/
+│   │   │   ├── cors.js     # CORS whitelist
+│   │   │   └── db.js       # MongoDB connection
+│   │   ├── controllers/    # Business logic
+│   │   ├── middleware/     # auth.js, upload.js, validate.js, turnstile.js
+│   │   ├── models/         # Mongoose schemas
+│   │   ├── routes/         # Express routers
+│   │   └── utils/          # validators.js, audit.js, r2.service.js
+│   ├── uploads/            # Local file storage (dev only)
+│   └── package.json
+│
+├── soet-client/           # React + Vite SPA
+│   ├── src/
+│   │   ├── context/        # AuthContext, NotificationContext
+│   │   ├── components/     # Layout, ProtectedRoute, NotificationBell, etc.
+│   │   ├── pages/          # All route-level components
+│   │   └── styles/         # Global CSS
+│   └── package.json
+│
+├── frontend/              # Legacy static HTML (archived)
+└── backend/               # Legacy PHP backend (archived)
+```
 
 ---
 
-## 🚀 Features & Upgrades
-- **Dynamic Content Management:** Admins can securely log in via `/admin-login` to issue notices, syllabus updates, and manage student enquiries.
-- **Direct-to-R2 Uploads:** The backend issues presigned URLs, allowing the browser to upload heavy files (PDFs, images) directly to Cloudflare R2, completely bypassing backend rate limits and bandwidth.
-- **Enhanced Security:** Memory-stored JWTs (mitigating XSS), strict function-based CORS whitelisting, and Cloudflare Turnstile verification on all public POST routes.
-- **SEO Optimized:** Retains exact legacy DOM semantics, semantic HTML5, and native meta tags, fully supported by Vite's build process.
-
----
-
-## 💻 Local Development
+## 🚀 Quick Start (Local Development)
 
 ### Prerequisites
-- Node.js (v18 or higher recommended)
-- A MongoDB Atlas connection string (or local MongoDB)
-- Cloudflare R2 and Turnstile credentials (for testing full E2E flow)
+- Node.js ≥ 20
+- MongoDB (local or Atlas)
+- (Optional) Cloudflare R2 bucket + Turnstile keys for full production parity
 
-### 1. Start the Backend (API)
+### 1. Backend API
+
 ```bash
 cd soet-api
 npm install
-# Configure your .env (see .env.example)
-npm run dev
+cp .env.example .env     # fill in your values
+npm run dev              # starts on http://localhost:5000
 ```
-The API server will run at `http://localhost:5000`.
 
-### 2. Start the Frontend (Client)
+### 2. Frontend (React)
+
 ```bash
 cd soet-client
 npm install
-# Configure your .env (see .env.example)
-npm run dev
+cp .env.example .env     # set VITE_API_URL
+npm run dev              # starts on http://localhost:5173
 ```
-The Vite dev server will run at `http://localhost:5173`.
 
 ---
 
 ## 🔐 Environment Variables
 
-You will need to create a `.env` file in both directories. Reference `.env.example` where applicable.
+### `soet-api/.env`
 
-**`soet-client/.env`**
-```env
-VITE_API_URL=http://localhost:5000
-VITE_TURNSTILE_SITE_KEY=<cloudflare_public_key>
-```
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `PORT` | No | Server port (default `5000`) |
+| `MONGODB_URI` | **Yes** | MongoDB connection string |
+| `JWT_SECRET` | **Yes** | Secret for signing JWTs (min 32 chars) |
+| `JWT_EXPIRES_IN` | No | Token expiry (default `7d`) |
+| `FRONTEND_URL` | No | Allowed CORS origin (default `http://localhost:5173`) |
+| `NODE_ENV` | No | `development` or `production` |
+| `R2_ACCOUNT_ID` | No | Cloudflare R2 account ID (production uploads) |
+| `R2_ACCESS_KEY_ID` | No | Cloudflare R2 key ID |
+| `R2_SECRET_ACCESS_KEY` | No | Cloudflare R2 secret |
+| `R2_BUCKET_NAME` | No | R2 bucket name |
+| `CLOUDFLARE_TURNSTILE_SECRET` | No | Turnstile secret key (form bot protection) |
 
-**`soet-api/.env`**
-```env
-NODE_ENV=development
-PORT=5000
-MONGODB_URI=<your_mongodb_atlas_uri>
-CLIENT_ORIGINS=http://localhost:5173,https://soet.ac.in
-JWT_SECRET=<secure_random_string>
-TURNSTILE_SECRET_KEY=<cloudflare_secret_key>
-R2_ACCESS_KEY_ID=<cloudflare_r2_key>
-R2_SECRET_ACCESS_KEY=<cloudflare_r2_secret>
-R2_ENDPOINT=https://<account_id>.r2.cloudflarestorage.com
-R2_BUCKET_NAME=soet-assets
+### `soet-client/.env`
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `VITE_API_URL` | No | Backend base URL (default `http://localhost:5000`) |
+| `VITE_TURNSTILE_SITE_KEY` | No | Cloudflare Turnstile site key |
+
+---
+
+## 🌱 Seed & Test Data
+
+```bash
+# Seed 30 fake verified students (for TPO dashboard testing)
+cd soet-api
+node src/seeds/students.seed.js
+
+# Or create an admin directly in MongoDB:
+db.users.insertOne({
+  name: "Admin",
+  email: "admin@soet.ac.in",
+  password: "<bcrypt-hash>",
+  role: "admin",
+  status: "approved"
+})
 ```
 
 ---
 
-## 🚢 Deployment
+## 📡 API Reference
 
-1. **Frontend (Cloudflare Pages):** Connect the repository to Cloudflare Pages, set the root directory to `soet-client`, build command `npm run build`, and output directory `dist`.
-2. **Backend (Render):** Connect the repository as a Web Service, set the root directory to `soet-api`, build command `npm install`, start command `npm start`. Ensure `0.0.0.0/0` is whitelisted in MongoDB Atlas for Render's dynamic IPs.
-3. **DNS Cutover:** Create a CNAME for `assets.soet.ac.in` pointing to the R2 bucket, and map the root domain (`@` and `www`) to the Cloudflare Pages deployment.
+All routes are prefixed with `/api`. Authenticated routes require:
+```
+Authorization: Bearer <jwt_token>
+```
+
+### Auth
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/auth/register` | Public | Register (student/hod/teacher/alumni) |
+| POST | `/auth/login` | Public | Login → returns JWT |
+| POST | `/auth/logout` | Public | Clear session |
+| GET | `/auth/me` | 🔐 Any | Get own user object |
+
+### Admin
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/admin/users` | 🔐 Admin | List all users (filter by role/status) |
+| PUT | `/admin/users/:id/status` | 🔐 Admin | Approve / reject / block user |
+| PUT | `/admin/users/:id/chat-block` | 🔐 Admin | Block/unblock user from chat |
+| DELETE | `/admin/users/:id` | 🔐 Admin | Delete user |
+| POST | `/admin/users/tpo` | 🔐 Admin | Create a TPO account |
+| GET | `/admin/enquiries` | 🔐 Admin | View contact form submissions |
+| POST | `/admin/uploads/presign` | 🔐 Admin | Get R2 presigned upload URL |
+
+### Branches
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/branches` | Public | List all branches |
+| POST | `/admin/branches` | 🔐 Admin | Create branch |
+| PUT | `/admin/branches/:id` | 🔐 Admin | Update branch |
+| DELETE | `/admin/branches/:id` | 🔐 Admin | Delete branch |
+
+### Syllabus
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/syllabus` | 🔐 All | Get syllabi (filtered by own branch for students/teachers) |
+| POST | `/syllabus` | 🔐 Admin, HOD | Upload syllabus PDF |
+| PUT | `/syllabus/:id` | 🔐 Admin, HOD | Update syllabus |
+| DELETE | `/syllabus/:id` | 🔐 Admin, HOD | Delete syllabus |
+
+### Announcements
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/announcements` | Public | Get published announcements |
+| POST | `/announcements` | 🔐 Admin, HOD, TPO | Create announcement |
+| PUT | `/announcements/:id` | 🔐 Admin, HOD, TPO | Edit announcement |
+| DELETE | `/announcements/:id` | 🔐 Admin, HOD | Delete announcement |
+| PUT | `/announcements/:id/pin` | 🔐 Admin, HOD | Toggle pin |
+
+### Student
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/student/profile` | 🔐 Student (approved) | Get own profile |
+| POST | `/student/profile` | 🔐 Student (approved) | Submit profile |
+| GET | `/student/portfolio` | 🔐 Student (approved) | Get portfolio data |
+| POST | `/student/portfolio/academics` | 🔐 Student | Add academic record |
+| POST | `/student/portfolio/achievements` | 🔐 Student | Add achievement |
+
+### Staff (Admin + HOD)
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/staff/students/pending` | 🔐 Admin, HOD | List pending students |
+| GET | `/staff/students/verified` | 🔐 Admin, HOD | List verified students |
+| PUT | `/staff/students/:id/verify` | 🔐 Admin, HOD | Verify a student |
+| PUT | `/staff/students/bulk-verify` | 🔐 Admin, HOD | Bulk verify students |
+
+### TPO
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/tpo/students` | 🔐 TPO, Admin, HOD | Paginated/filtered student list |
+| GET | `/tpo/students/:userId` | 🔐 TPO, Admin, HOD | Full student detail |
+
+### Alumni
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/alumni/profile` | 🔐 Alumni | Get own alumni profile |
+| POST | `/alumni/profile` | 🔐 Alumni | Submit/update profile |
+| GET | `/alumni/directory` | 🔐 All | Alumni directory (approved only) |
+| GET | `/alumni/jobs` | 🔐 All | Job referrals |
+| POST | `/alumni/jobs` | 🔐 Alumni (approved) | Post job referral |
+| GET | `/alumni/mentorship` | 🔐 Student, Alumni | Mentorship requests |
+| POST | `/alumni/mentorship` | 🔐 Student (approved) | Send mentorship request |
+| PUT | `/alumni/mentorship/:id` | 🔐 Alumni (approved) | Accept/decline request |
+| GET | `/alumni/stories` | Public | Published success stories |
+| POST | `/alumni/stories` | 🔐 Alumni (approved) | Submit success story |
+| PUT | `/alumni/stories/:id/status` | 🔐 Admin | Approve/reject story |
+
+### Notifications
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/notifications` | 🔐 Any | Get own notifications |
+| PUT | `/notifications/:id/read` | 🔐 Any | Mark as read |
+| POST | `/notifications/send` | 🔐 Admin, HOD, TPO | Send a notification |
+
+### Chat
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/chat/rooms` | 🔐 Any | List accessible chat rooms |
+| GET | `/chat/rooms/:roomId/messages` | 🔐 Any | Message history (paginated) |
+| DELETE | `/chat/messages/:messageId` | 🔐 Owner or Admin | Delete a message |
+| POST | `/chat/upload` | 🔐 Any | Upload file attachment |
+
+### Audit Logs
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/audit-logs` | 🔐 Admin | Get audit logs (filter by actor/action/date) |
+
+### Misc
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/enquiries` | Public + Turnstile | Contact form submission |
+| POST | `/newsletter` | Public + Turnstile | Newsletter subscription |
+| GET | `/health` | Public | Server health check |
 
 ---
 
-## 📄 License
-&copy; 2026-27 School of Engineering and Technology, Samrat Vikramaditya Vishwavidyalaya Ujjain. All rights reserved.
+## 🔑 Role–Permission Matrix
+
+| Feature | Student | Teacher | HOD | Admin | TPO | Alumni |
+|---------|:-------:|:-------:|:---:|:-----:|:---:|:------:|
+| View public pages | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Register / Login | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Complete own profile | ✅ | – | – | – | – | ✅ |
+| View own branch syllabus | ✅ | ✅ | – | – | – | – |
+| View all syllabi | – | – | ✅ | ✅ | – | – |
+| Upload / edit syllabus | – | – | ✅ | ✅ | – | – |
+| View announcements | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Create announcement | – | – | ✅ | ✅ | ✅ (placement only) | – |
+| Verify students | – | – | ✅ | ✅ | – | – |
+| View student list (TPO style) | – | – | ✅ | ✅ | ✅ | – |
+| Export student data (xlsx/csv) | – | – | – | – | ✅ | – |
+| Manage users | – | – | – | ✅ | – | – |
+| Create TPO account | – | – | – | ✅ | – | – |
+| View audit logs | – | – | – | ✅ | – | – |
+| Post job referrals | – | – | – | – | – | ✅ |
+| View job referrals | ✅ | – | – | – | ✅ | ✅ |
+| Send mentorship request | ✅ | – | – | – | – | – |
+| Accept mentorship request | – | – | – | – | – | ✅ |
+| View alumni directory | ✅ | – | ✅ | ✅ | ✅ | ✅ |
+| Submit success story | – | – | – | – | – | ✅ |
+| Approve success story | – | – | – | ✅ | – | – |
+| Send notifications | – | – | ✅ | ✅ | ✅ | – |
+| Chat (own eligible rooms) | ✅ | ✅ | ✅ | ✅ | – | ✅ |
+| Delete any chat message | – | – | – | ✅ | – | – |
+| Block user from chat | – | – | – | ✅ | – | – |
+| Chat moderation page | – | – | – | ✅ | – | – |
+
+---
+
+## 💬 Chat Room Access
+
+| Room Type | Student | Teacher | HOD | Admin | TPO | Alumni |
+|-----------|:-------:|:-------:|:---:|:-----:|:---:|:------:|
+| Branch Room (own) | ✅ (verified) | ✅ (own branch) | ✅ (all) | ✅ (all) | – | – |
+| Branch Room (other) | ❌ | ❌ (other branch) | ✅ | ✅ | – | – |
+| Teachers Group | – | ✅ | ✅ | ✅ | – | – |
+| HOD Group | – | – | ✅ | ✅ | – | – |
+| Administrative Group | – | – | ✅ | ✅ | – | – |
+| Alumni Chat | – | – | ✅ | ✅ | – | ✅ |
+
+---
+
+## 🔒 Security Notes
+
+- **JWT** stored in memory (not localStorage) to mitigate XSS
+- **Helmet** sets secure HTTP headers on every response
+- **CORS** uses an explicit origin whitelist (not `*`)
+- **Rate limiting**: 100 req/15min globally; 20 POST/15min on API
+- **File uploads**: MIME-type and extension validation; 5–20MB limits
+- **HTML sanitization**: `sanitize-html` on announcement bodies
+- **IDOR protection**: student profile routes use `req.user._id` only (never a URL param)
+- **Admin-only**: all destructive operations (delete user, delete message) require `admin` role
+- **Blocked users**: checked on every authenticate() call — no stale tokens
+
+---
+
+## 🧪 Test Checklist
+
+See [TEST_CHECKLIST.md](./TEST_CHECKLIST.md) for the full manual test plan covering all 6 roles.
+
+---
+
+## 📦 Deployment
+
+### Backend → Render
+
+1. Set all environment variables in Render dashboard
+2. Build command: `npm install`
+3. Start command: `npm start`
+4. Add MongoDB Atlas connection IP whitelist for Render's IPs
+
+### Frontend → Cloudflare Pages
+
+1. Build command: `npm run build`
+2. Output directory: `dist`
+3. Set `VITE_API_URL` environment variable to Render backend URL
+
+---
+
+## 📂 Legacy Frontend
+
+The `/frontend` directory contains the original static HTML/CSS site. It is kept for reference and SEO semantic parity. All new development should go in `soet-client`.

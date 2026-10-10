@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Turnstile } from '@marsidev/react-turnstile';
+import '../styles/admin-login.css';
 
 export default function AdminLogin() {
     const [email, setEmail] = useState('');
@@ -70,68 +71,81 @@ export default function AdminLogin() {
 
     return (
         <>
-            
-    <div className="admin-login-container">
-        <div className="login-header">
-            <img src="/assets/images/Vikram-university_Logo.png" alt="SoET Logo" />
-            <h1><i className="fas fa-user-shield"></i> Admin Login</h1>
-            <p>School of Engineering and Technology</p>
-            <p style={{ fontSize: '0.9rem', color: '#999' }}>Samrat Vikramaditya Vishwavidyalaya, Ujjain</p>
-        </div>
+            {/* Page Header */}
+            <section className="page-header">
+                <div className="container">
+                    <h1>Admin Access</h1>
+                    <p>Secure Portal for SoET Administration</p>
+                    <nav className="breadcrumb">
+                        <Link to="/">Home</Link> <span>/</span> Admin Login
+                    </nav>
+                </div>
+            </section>
 
-        {status.message && (
-            <div className={`alert alert-${status.type}`} style={{ padding: '15px', marginBottom: '20px', borderRadius: '5px', backgroundColor: status.type === 'success' ? '#d4edda' : status.type === 'error' ? '#f8d7da' : '#e2e3e5', color: status.type === 'success' ? '#155724' : status.type === 'error' ? '#721c24' : '#383d41' }}>
-                {status.type === 'success' && <i className="fas fa-check-circle"></i>}
-                {' '}{status.message}
-            </div>
-        )}
+            {/* Admin Login Section */}
+            <section className="admin-login-section">
+                <div className="container">
+                    <div className="admin-login-container">
+                        <div className="login-header">
+                            <img src="/assets/images/Vikram-university_Logo.png" alt="SoET Logo" />
+                            <h1><i className="fas fa-user-shield"></i> Admin Login</h1>
+                            <p>School of Engineering and Technology</p>
+                            <p style={{ fontSize: '0.9rem', color: '#999', marginTop: '5px' }}>Samrat Vikramaditya Vishwavidyalaya, Ujjain</p>
+                        </div>
 
-        <form id="adminLoginForm" onSubmit={handleLogin}>
-            <div className="form-group">
-                <label htmlFor="adminEmail">
-                    <i className="fas fa-envelope"></i> Email Address
-                </label>
-                <input type="email" id="adminEmail" name="adminEmail" required 
-                       placeholder="Enter your admin email" autoComplete="email"
-                       value={email} onChange={(e) => setEmail(e.target.value)} />
-            </div>
+                        {status.message && (
+                            <div className={`alert alert-${status.type}`} style={{ padding: '15px', marginBottom: '20px', borderRadius: '5px', backgroundColor: status.type === 'success' ? '#d4edda' : status.type === 'error' ? '#f8d7da' : '#e2e3e5', color: status.type === 'success' ? '#155724' : status.type === 'error' ? '#721c24' : '#383d41' }}>
+                                {status.type === 'success' && <i className="fas fa-check-circle"></i>}
+                                {' '}{status.message}
+                            </div>
+                        )}
 
-            <div className="form-group">
-                <label htmlFor="adminPassword">
-                    <i className="fas fa-lock"></i> Password
-                </label>
-                <input type="password" id="adminPassword" name="adminPassword" required 
-                       placeholder="Enter your password" autoComplete="current-password"
-                       value={password} onChange={(e) => setPassword(e.target.value)} />
-            </div>
+                        <form id="adminLoginForm" onSubmit={handleLogin}>
+                            <div className="form-group">
+                                <label htmlFor="adminEmail">
+                                    <i className="fas fa-envelope"></i> Email Address
+                                </label>
+                                <input type="email" id="adminEmail" name="adminEmail" required 
+                                       placeholder="Enter your admin email" autoComplete="email"
+                                       value={email} onChange={(e) => setEmail(e.target.value)} />
+                            </div>
 
-            <div className="form-group" style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
-                <Turnstile 
-                    ref={turnstileRef}
-                    siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'} 
-                    onSuccess={(token) => setTurnstileToken(token)}
-                    onError={() => setStatus({ type: 'error', message: 'CAPTCHA error. Please try again.' })}
-                    onExpire={() => {
-                        setTurnstileToken('');
-                        setStatus({ type: 'error', message: 'CAPTCHA expired. Please complete it again.' });
-                    }}
-                />
-            </div>
+                            <div className="form-group">
+                                <label htmlFor="adminPassword">
+                                    <i className="fas fa-lock"></i> Password
+                                </label>
+                                <input type="password" id="adminPassword" name="adminPassword" required 
+                                       placeholder="Enter your password" autoComplete="current-password"
+                                       value={password} onChange={(e) => setPassword(e.target.value)} />
+                            </div>
 
-            <button type="submit" className="btn-submit" disabled={isLoading || !turnstileToken}>
-                {isLoading ? <><i className="fas fa-spinner fa-spin"></i> Signing In...</> : <><i className="fas fa-sign-in-alt"></i> Sign In</>}
-            </button>
-        </form>
+                            <div className="form-group" style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
+                                <Turnstile 
+                                    ref={turnstileRef}
+                                    siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'} 
+                                    onSuccess={(token) => setTurnstileToken(token)}
+                                    onError={() => setStatus({ type: 'error', message: 'CAPTCHA error. Please try again.' })}
+                                    onExpire={() => {
+                                        setTurnstileToken('');
+                                        setStatus({ type: 'error', message: 'CAPTCHA expired. Please complete it again.' });
+                                    }}
+                                />
+                            </div>
 
-        <div className="back-home">
-            <Link to="/">
-                <i className="fas fa-arrow-left"></i> Back to Homepage
-            </Link>
-        </div>
-    </div>
+                            <button type="submit" className="btn-submit" disabled={isLoading || !turnstileToken}>
+                                {isLoading ? <><i className="fas fa-spinner fa-spin"></i> Signing In...</> : <><i className="fas fa-sign-in-alt"></i> Sign In</>}
+                            </button>
+                        </form>
 
-    {/* Supabase Client */}
-    
+                        <div className="back-home">
+                            <Link to="/">
+                                <i className="fas fa-arrow-left"></i> Back to Homepage
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </>
     );
 }
+

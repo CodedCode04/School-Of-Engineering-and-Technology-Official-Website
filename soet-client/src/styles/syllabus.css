@@ -1,0 +1,296 @@
+.syllabus-section, .postgraduate-syllabus {
+    padding: 60px 0;
+    background-color: var(--light-gray, #f9f9f9);
+}
+
+.department-filter {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.department-filter h2 {
+    color: var(--primary-blue, #211D70);
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+.filter-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.filter-btn {
+    padding: 10px 20px;
+    border: 2px solid var(--primary-blue, #211D70);
+    background-color: transparent;
+    color: var(--primary-blue, #211D70);
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover, .filter-btn.active {
+    background-color: var(--primary-blue, #211D70);
+    color: white;
+}
+
+.syllabus-grid, .mtech-programs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.syllabus-card, .mtech-program-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    border-top: 5px solid var(--primary-red, #841C2C);
+}
+
+.syllabus-card:hover, .mtech-program-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.card-header, .program-header {
+    padding: 20px;
+    background-color: #f4f6f9;
+    border-bottom: 1px solid #eaeaea;
+    text-align: center;
+    position: relative;
+}
+
+.dept-icon, .program-icon {
+    width: 60px;
+    height: 60px;
+    background-color: var(--primary-blue, #211D70);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin: 0 auto 15px;
+}
+
+.card-header h3, .program-title h3 {
+    color: var(--primary-blue, #211D70);
+    font-size: 1.3rem;
+    margin-bottom: 5px;
+}
+
+.program-type, .program-badge {
+    display: inline-block;
+    background-color: var(--primary-red, #841C2C);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.card-content, .program-content {
+    padding: 20px;
+}
+
+.syllabus-links h4, .syllabus-section h4 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.semester-links, .semester-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.syllabus-link, .semester-card {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #495057;
+    transition: all 0.2s ease;
+    justify-content: flex-start;
+}
+
+.syllabus-link i, .semester-info i {
+    color: var(--primary-red, #841C2C);
+    margin-right: 10px;
+    font-size: 1.2rem;
+}
+
+.syllabus-link:hover, .semester-card:hover {
+    background-color: #e9ecef;
+    color: var(--primary-blue, #211D70);
+    border-color: #ced4da;
+    transform: translateX(5px);
+}
+
+.syllabus-link.unavailable {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.syllabus-link.unavailable:hover {
+    transform: none;
+    background-color: #f8f9fa;
+    color: #495057;
+}
+
+.additional-resources {
+    margin-top: 60px;
+}
+
+.additional-resources h2 {
+    text-align: center;
+    color: var(--primary-blue, #211D70);
+    margin-bottom: 30px;
+    font-size: 2rem;
+}
+
+.resource-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+}
+
+.resource-card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.resource-card:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    transform: translateY(-5px);
+}
+
+.resource-icon {
+    font-size: 2.5rem;
+    color: var(--primary-red, #841C2C);
+    margin-bottom: 15px;
+}
+
+.resource-card h3 {
+    color: var(--primary-blue, #211D70);
+    margin-bottom: 10px;
+}
+
+.resource-card p {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+.resource-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    background-color: var(--primary-blue, #211D70);
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.resource-link:hover {
+    background-color: #1a175c;
+}
+
+.mtech-intro {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    margin-bottom: 40px;
+}
+
+.mtech-highlights {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.highlight-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f8f9fa;
+    padding: 10px 15px;
+    border-radius: 30px;
+    font-weight: 500;
+    color: var(--primary-blue, #211D70);
+}
+
+.highlight-item i {
+    color: var(--primary-red, #841C2C);
+}
+
+.program-description {
+    margin-bottom: 20px;
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.semester-card {
+    justify-content: space-between;
+}
+
+.download-icon {
+    color: #888;
+}
+
+.semester-card:hover .download-icon {
+    color: var(--primary-red, #841C2C);
+}
+
+.mtech-footer-info {
+    margin-top: 30px;
+}
+
+.info-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    background-color: #e9f2ff;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 5px solid var(--primary-blue, #211D70);
+}
+
+.info-card i {
+    font-size: 1.5rem;
+    color: var(--primary-blue, #211D70);
+    margin-top: 5px;
+}
+
+.info-content h4 {
+    color: var(--primary-blue, #211D70);
+    margin-bottom: 5px;
+}
+
+.info-content p {
+    color: #444;
+    font-size: 0.95rem;
+}

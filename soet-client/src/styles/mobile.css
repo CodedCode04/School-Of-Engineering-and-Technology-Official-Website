@@ -1,0 +1,292 @@
+/* Responsive Header and Mobile Menu Overrides */
+
+/* Hide the mobile-only items on desktop */
+.mobile-only-nav-item {
+    display: none;
+}
+
+@media (max-width: 992px) {
+    /* Hide top bar entirely on mobile for a clean look */
+    .top-bar {
+        display: none !important;
+    }
+    
+    /* Make the mobile menu toggle visible */
+    .mobile-menu-toggle {
+        display: block !important;
+        background: transparent;
+        border: none;
+        font-size: 1.8rem;
+        color: var(--primary-blue, #0d3b66);
+        cursor: pointer;
+    }
+    
+    /* Ensure Header starts at top and stays sticky */
+    .header {
+        top: 0 !important;
+        position: sticky !important;
+        z-index: 9999;
+    }
+
+    /* Clean up the logo area, just show SoET on mobile */
+    .logo-text .college-name,
+    .logo-text .university-name {
+        display: none !important;
+    }
+    
+    .logo-text h1 {
+        font-size: 1.8rem !important;
+        margin: 0 !important;
+    }
+    
+    /* Mobile Navigation Drawer */
+    .nav {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #ffffff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        padding: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-in-out;
+    }
+    
+    .nav.active {
+        max-height: 100vh;
+        overflow-y: auto;
+        border-top: 1px solid #eee;
+    }
+    
+    .nav ul {
+        flex-direction: column !important;
+        gap: 0 !important;
+        padding: 0 !important;
+        align-items: flex-start !important;
+        display: flex;
+        margin: 0;
+    }
+    
+    .nav ul li {
+        width: 100%;
+    }
+    
+    .nav ul li a {
+        display: block;
+        padding: 15px 20px;
+        border-bottom: 1px solid #f0f0f0;
+        text-decoration: none;
+        color: var(--primary-blue, #0d3b66);
+        font-size: 1.1rem;
+    }
+    
+    /* Remove hover underlines for mobile */
+    .nav a::after {
+        display: none !important;
+    }
+    
+    .nav ul li:last-child a {
+        border-bottom: none;
+    }
+    
+    /* Show the extra mobile nav items */
+    .mobile-only-nav-item {
+        display: block !important;
+    }
+    
+    /* Enhance the mobile menu nav links a bit more for utility */
+    .nav ul li.mobile-only-nav-item a {
+        background-color: #f9f9f9;
+        color: var(--primary-red, #d90429) !important;
+        font-weight: 600;
+        border-left: 4px solid var(--primary-red, #d90429);
+    }
+    
+    /* Admission button on mobile */
+    .nav .admission-btn {
+        margin: 15px 20px;
+        display: block !important;
+        text-align: center;
+        background: var(--primary-red, #d90429);
+        color: white !important;
+        border-radius: 8px;
+    }
+}
+
+@media (max-width: 576px) {
+    .logo-text h1 {
+        font-size: 1.5rem !important;
+    }
+    .logo-container img {
+        height: 45px !important;
+    }
+}
+
+/* =========================================
+   PAGE-SPECIFIC RESPONSIVE IMPROVEMENTS
+   ========================================= */
+
+/* --- 1. Home Page --- */
+@media (max-width: 768px) {
+    .features-grid, .gallery-grid, .links-grid, .hero-stats {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+    .campus-content, .society-content, .hero-container {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 30px !important;
+    }
+    .hero {
+        min-height: auto !important;
+        padding-top: 60px !important;
+        padding-bottom: 40px !important;
+    }
+    .hero-content h2 { font-size: 2rem !important; }
+}
+
+/* --- 2. About Page --- */
+@media (max-width: 768px) {
+    .about-content, .timeline-content {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 20px !important;
+    }
+    .leadership-grid, .faculty-grid, .research-grid, .placements-grid, .achievements-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+}
+
+/* --- 3. Academics Page --- */
+@media (max-width: 768px) {
+    .overview-content, .admission-content {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 20px !important;
+    }
+    .programs-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+    .program-card {
+        padding: 20px !important;
+    }
+}
+
+/* --- 4. Activities Page --- */
+@media (max-width: 768px) {
+    .activity-cards-grid, .placement-cards-grid, .social-impact-grid, .sports-cards-grid, .wellness-cards-grid, .benefits-grid, .dark-society-grid, .dark-activities-grid, .clubs-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+    .tab-buttons {
+        flex-direction: column !important;
+        width: 100% !important;
+    }
+    .tab-buttons button {
+        width: 100% !important;
+        margin-bottom: 10px !important;
+    }
+}
+
+/* --- 5. Announcements Page --- */
+@media (max-width: 768px) {
+    .news-content, .newsletter-content {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 20px !important;
+    }
+    .notices-grid, .announcements-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+    .filter-controls {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+    }
+}
+
+/* --- 6. Contact Page --- */
+@media (max-width: 768px) {
+    .contact-content, .map-content {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 30px !important;
+    }
+    .departments-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+    .form-row {
+        flex-direction: column !important;
+        gap: 15px !important;
+    }
+    .contact-form {
+        padding: 20px !important;
+    }
+}
+
+/* --- 7. Facilities Page --- */
+@media (max-width: 768px) {
+    .facilities-grid, .lab-gallery-grid, .infrastructure-grid, .safety-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+    .facility-content, .infra-content {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 20px !important;
+    }
+}
+
+/* --- 8. Syllabus Page --- */
+@media (max-width: 768px) {
+    .syllabus-grid, .resource-grid, .mtech-programs-grid, .semester-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+    .department-filters {
+        flex-direction: column !important;
+    }
+    .department-filters button {
+        width: 100% !important;
+    }
+}
+
+/* --- 9. Admin Pages --- */
+@media (max-width: 768px) {
+    .actions-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+    }
+    .dashboard-header {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 15px !important;
+    }
+    .login-container {
+        width: 95% !important;
+        margin: 0 auto !important;
+        padding: 30px 20px !important;
+    }
+}
+
+/* Universal Section Adjustments for Mobile */
+@media (max-width: 768px) {
+    section {
+        padding: 40px 15px !important;
+    }
+    .section-header h2 {
+        font-size: 1.8rem !important;
+    }
+    .section-header p {
+        font-size: 1rem !important;
+    }
+    .container {
+        padding: 0 15px !important;
+    }
+}
