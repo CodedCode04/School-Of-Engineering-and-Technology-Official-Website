@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import '../styles/mobile.css';
 
 export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -31,9 +32,9 @@ export default function Header() {
                             <i className="fas fa-book-open" aria-hidden="true"></i>
                             Syllabus
                         </Link>
-                        <Link to="/admin-login" className="admin-login-btn" aria-label="Admin Login">
-                            <i className="fas fa-user-shield" aria-hidden="true"></i>
-                            Admin Login
+                        <Link to="/login" className="admin-login-btn" aria-label="Portal Login">
+                            <i className="fas fa-sign-in-alt" aria-hidden="true"></i>
+                            Portal Login
                         </Link>
                     </div>
                 </div>
@@ -58,6 +59,11 @@ export default function Header() {
                             <li><NavLink to="/facilities">Facilities</NavLink></li>
                             <li><NavLink to="/activities">Activities</NavLink></li>
                             <li><NavLink to="/contact">Contact</NavLink></li>
+                            <li className="mobile-only-nav-item"><NavLink to="/announcements">Announcements</NavLink></li>
+                            <li className="mobile-only-nav-item"><NavLink to="/syllabus">Syllabus</NavLink></li>
+                            <li className="mobile-only-nav-item"><NavLink to="/login">Portal Login</NavLink></li>
+                            <li className="mobile-only-nav-item"><a href="mailto:soetvikramujn@gmail.com">Email Us</a></li>
+                            <li className="mobile-only-nav-item"><a href="tel:+919893295134">Call Us</a></li>
                             <li>
                                 <a 
                                     href="https://vikram.mponline.gov.in/Portal/Services/VIKRAM/Entrance/UTD/Admission_Entrance_Form.aspx" 
@@ -77,7 +83,7 @@ export default function Header() {
                         aria-expanded={isMobileMenuOpen}
                         onClick={toggleMenu}
                     >
-                        <i className="fas fa-bars" aria-hidden="true"></i>
+                        <i className={isMobileMenuOpen ? "fas fa-times" : "fas fa-bars"} aria-hidden="true"></i>
                     </button>
                 </div>
             </header>

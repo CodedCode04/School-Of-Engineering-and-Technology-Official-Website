@@ -58,6 +58,9 @@ app.get('/health', (req, res) => {
     });
 });
 
+// Serve static uploads
+app.use('/uploads', express.static('uploads'));
+
 // API Routes
 app.use('/api', routes);
 

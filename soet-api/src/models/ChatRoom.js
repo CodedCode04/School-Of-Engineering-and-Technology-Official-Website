@@ -1,0 +1,13 @@
+import mongoose from 'mongoose';
+
+const chatRoomSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  type: { 
+      type: String, 
+      enum: ['branch', 'teachers', 'hod', 'admin', 'alumni'], 
+      required: true 
+  },
+  branch: { type: mongoose.Schema.Types.ObjectId, ref: 'Branch' }
+}, { timestamps: true });
+
+export default mongoose.model('ChatRoom', chatRoomSchema);

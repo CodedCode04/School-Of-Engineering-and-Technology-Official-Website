@@ -1,212 +1,163 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
+import NotificationBell from '../components/NotificationBell';
+import toast from 'react-hot-toast';
+import StudentVerificationList from '../components/StudentVerificationList';
+import SuccessStories from './SuccessStories';
 
 export default function AdminDashboard() {
+    const { user, logout, api } = useAuth();
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('notices');
-    const [records, setRecords] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [file, setFile] = useState(null);
-    const [formData, setFormData] = useState({
-        title: '',
-        category: 'Notice',
-        description: '',
-        date: new Date().toISOString().split('T')[0]
-    });
-    const [status, setStatus] = useState({ type: '', message: '' });
-
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    const token = window.adminJwtToken;
+    const [activeTab, setActiveTab] = useState('users');
+    const [userRoleTab, setUserRoleTab] = useState('hod');
+    const [usersList, setUsersList] = useState([]);
 
     useEffect(() => {
-        document.title = "Admin Dashboard - SoET";
-        if (!token) {
-            navigate('/admin-login');
-        } else {
-            fetchRecords(activeTab);
-        }
-    }, [navigate, token, activeTab]);
+        if (activeTab === 'users') fetchUsers(userRoleTab);
+    }, [activeTab, userRoleTab]);
 
-    const fetchRecords = async (type) => {
-        setIsLoading(true);
+    const fetchUsers = async (role) => {
         try {
-            const res = await axios.get(`${apiUrl}/api/${type}`);
-            setRecords(res.data);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setIsLoading(false);
+            const res = await api.get(`/admin/users?role=${role}`);
+            setUsersList(res.data);
+        } catch {
+            toast.error('Failed to fetch users');
         }
     };
 
-    const handleLogout = () => {
-        window.adminJwtToken = null;
-        navigate('/');
-    };
-
-    const handleInputChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setStatus({ type: 'info', message: 'Starting upload...' });
-        setIsLoading(true);
-
+    const handleStatusUpdate = async (id, status) => {
         try {
-            let fileUrl = '';
-            
-            // 1. If file selected, get presigned URL and upload to R2
-            if (file) {
-                const presignRes = await axios.post(`${apiUrl}/api/admin/uploads/presign`, {
-                    fileName: file.name,
-                    contentType: file.type,
-                    fileSize: file.size,
-                    folder: activeTab
-                }, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-
-                const { uploadUrl, key } = presignRes.data;
-                
-                setStatus({ type: 'info', message: 'Uploading file to storage...' });
-                
-                await axios.put(uploadUrl, file, {
-                    headers: {
-                        'Content-Type': file.type
-                    }
-                });
-                
-                fileUrl = `https://assets.soet.ac.in/${key}`;
-            }
-
-            // 2. Post metadata to backend
-            setStatus({ type: 'info', message: 'Saving record...' });
-            const payload = {
-                title: formData.title,
-                content: formData.description,
-                category: formData.category,
-                date: formData.date,
-                link: fileUrl
-            };
-            
-            // Wait, Syllabus schema might be different. 
-            // In Stage 2, Notice: title, content, category, date, link.
-            // Syllabus: department, semester, title, link, year.
-            // For simplicity, let's just make it a Notice.
-            
-            await axios.post(`${apiUrl}/api/admin/${activeTab}`, payload, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            setStatus({ type: 'success', message: 'Record created successfully!' });
-            setFormData({ title: '', category: 'Notice', description: '', date: new Date().toISOString().split('T')[0] });
-            setFile(null);
-            fetchRecords(activeTab);
-            
-            setTimeout(() => setStatus({ type: '', message: '' }), 3000);
-        } catch (error) {
-            setStatus({ type: 'error', message: error.response?.data?.error || 'Operation failed.' });
-        } finally {
-            setIsLoading(false);
+            await api.put(`/admin/users/${id}/status`, { status });
+            toast.success(`User marked as ${status}`);
+            fetchUsers(userRoleTab);
+        } catch {
+            toast.error('Status update failed');
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this record?')) return;
-        try {
-            await axios.delete(`${apiUrl}/api/admin/${activeTab}/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            fetchRecords(activeTab);
-        } catch (error) {
-            alert('Failed to delete record.');
-        }
-    };
-
-    if (!token) return null;
+    const navItems = [
+        { key: 'users', label: '👥 User Approvals' },
+        { key: 'student-verification', label: '🎓 Student Profiles' },
+        { key: 'alumni-directory', label: '🏛️ Alumni Directory', navigate: '/alumni-directory' },
+        { key: 'success-stories', label: '⭐ Success Stories' },
+        { key: 'manage-announcements', label: '📢 Announcements', navigate: '/manage-announcements' },
+        { key: 'manage-syllabus', label: '📚 Syllabus', navigate: '/manage-syllabus' },
+        { key: 'audit-logs', label: '📋 Audit Logs', navigate: '/audit-logs' },
+    ];
 
     return (
-        <div style={{ padding: '100px 0', minHeight: '100vh', backgroundColor: '#f4f7f6' }}>
-            <div className="container">
-                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                    <h1><i className="fas fa-user-shield"></i> Admin Dashboard</h1>
-                    <button onClick={handleLogout} className="btn-logout" style={{ background: '#dc3545', color: '#fff', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer' }}>
-                        <i className="fas fa-sign-out-alt"></i> Logout
-                    </button>
+        <div className="dashboard-container">
+            <aside className="sidebar">
+                <h2>Admin Panel</h2>
+                <nav>
+                    <ul>
+                        {navItems.map(item => (
+                            <li key={item.key}>
+                                <a
+                                    href="#"
+                                    onClick={(e) => { e.preventDefault(); item.navigate ? navigate(item.navigate) : setActiveTab(item.key); }}
+                                    className={activeTab === item.key ? 'active' : ''}
+                                >
+                                    {item.label}
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                </nav>
+            </aside>
+
+            <main className="dashboard-main">
+                <header>
+                    <h1>Admin Dashboard</h1>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                        <button onClick={() => navigate('/admin/chat-moderation')} style={{ background: '#ffc107', color: '#000', border: 'none', padding: '7px 14px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}>Chat Moderation</button>
+                        <button onClick={() => navigate('/chat')} style={{ background: '#28a745', color: '#fff', border: 'none', padding: '7px 14px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}>Chat Rooms</button>
+                        <button onClick={() => navigate('/notifications/send')} style={{ background: '#0056b3', color: '#fff', border: 'none', padding: '7px 14px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}>Send Notification</button>
+                        <NotificationBell />
+                        <button onClick={logout} className="logout-btn" style={{ background: '#dc3545', color: '#fff', border: 'none', padding: '7px 14px', borderRadius: '4px', fontSize: '0.85rem' }}>Logout</button>
+                    </div>
                 </header>
 
-                <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
-                    <button onClick={() => setActiveTab('notices')} className={`btn-primary ${activeTab === 'notices' ? '' : 'btn-secondary'}`} style={{ opacity: activeTab === 'notices' ? 1 : 0.7 }}>Manage Notices</button>
-                    <button onClick={() => setActiveTab('syllabus')} className={`btn-primary ${activeTab === 'syllabus' ? '' : 'btn-secondary'}`} style={{ opacity: activeTab === 'syllabus' ? 1 : 0.7 }}>Manage Syllabus</button>
-                </div>
-
-                <div style={{ background: '#fff', padding: '2rem', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', marginBottom: '2rem' }}>
-                    <h2>Create New {activeTab === 'notices' ? 'Notice' : 'Syllabus'}</h2>
-                    {status.message && (
-                        <div style={{ padding: '10px', marginBottom: '15px', borderRadius: '4px', backgroundColor: status.type === 'error' ? '#f8d7da' : '#d4edda', color: status.type === 'error' ? '#721c24' : '#155724' }}>
-                            {status.message}
-                        </div>
-                    )}
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div className="dashboard-content" style={{ padding: '20px' }}>
+                    {/* User Approvals Tab */}
+                    {activeTab === 'users' && (
                         <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Title *</label>
-                            <input type="text" name="title" value={formData.title} onChange={handleInputChange} required style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ddd' }} />
-                        </div>
-                        
-                        <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Category</label>
-                            <input type="text" name="category" value={formData.category} onChange={handleInputChange} style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ddd' }} />
-                        </div>
-
-                        <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Description (optional)</label>
-                            <textarea name="description" value={formData.description} onChange={handleInputChange} rows="3" style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ddd' }}></textarea>
-                        </div>
-
-                        <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Attachment File *</label>
-                            <input type="file" onChange={(e) => setFile(e.target.files[0])} required style={{ width: '100%' }} />
-                            <small style={{ color: '#666' }}>File will be uploaded directly to Cloudflare R2 object storage.</small>
-                        </div>
-
-                        <button type="submit" disabled={isLoading} className="btn-primary" style={{ alignSelf: 'flex-start', opacity: isLoading ? 0.7 : 1 }}>
-                            {isLoading ? 'Processing...' : 'Upload & Save'}
-                        </button>
-                    </form>
-                </div>
-
-                <div style={{ background: '#fff', padding: '2rem', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
-                    <h2>Existing Records</h2>
-                    {records.length === 0 ? <p>No records found.</p> : (
-                        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '1rem' }}>
-                            <thead>
-                                <tr style={{ borderBottom: '2px solid #eee', textAlign: 'left' }}>
-                                    <th style={{ padding: '0.5rem' }}>Title</th>
-                                    <th style={{ padding: '0.5rem' }}>Date</th>
-                                    <th style={{ padding: '0.5rem' }}>Link</th>
-                                    <th style={{ padding: '0.5rem' }}>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {records.map(record => (
-                                    <tr key={record._id} style={{ borderBottom: '1px solid #eee' }}>
-                                        <td style={{ padding: '0.5rem' }}>{record.title}</td>
-                                        <td style={{ padding: '0.5rem' }}>{new Date(record.createdAt || record.date).toLocaleDateString()}</td>
-                                        <td style={{ padding: '0.5rem' }}>
-                                            {record.link && <a href={record.link} target="_blank" rel="noreferrer">View File</a>}
-                                        </td>
-                                        <td style={{ padding: '0.5rem' }}>
-                                            <button onClick={() => handleDelete(record._id)} style={{ background: '#dc3545', color: '#fff', border: 'none', padding: '0.3rem 0.6rem', borderRadius: '4px', cursor: 'pointer' }}>Delete</button>
-                                        </td>
-                                    </tr>
+                            <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
+                                {['hod', 'teacher', 'alumni', 'student', 'tpo'].map(role => (
+                                    <button
+                                        key={role}
+                                        onClick={() => setUserRoleTab(role)}
+                                        style={{
+                                            padding: '7px 14px',
+                                            background: userRoleTab === role ? '#003366' : '#eee',
+                                            color: userRoleTab === role ? '#fff' : '#333',
+                                            border: 'none', borderRadius: '4px', cursor: 'pointer'
+                                        }}
+                                    >
+                                        {role.toUpperCase()}
+                                    </button>
                                 ))}
-                            </tbody>
-                        </table>
+                            </div>
+
+                            <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff' }}>
+                                <thead>
+                                    <tr style={{ background: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
+                                        <th style={{ padding: '12px', textAlign: 'left' }}>Name</th>
+                                        <th style={{ padding: '12px', textAlign: 'left' }}>Email</th>
+                                        <th style={{ padding: '12px', textAlign: 'left' }}>Branch</th>
+                                        <th style={{ padding: '12px', textAlign: 'left' }}>Status</th>
+                                        <th style={{ padding: '12px', textAlign: 'left' }}>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {usersList.map(u => (
+                                        <tr key={u._id} style={{ borderBottom: '1px solid #dee2e6' }}>
+                                            <td style={{ padding: '12px' }}>{u.name}</td>
+                                            <td style={{ padding: '12px' }}>{u.email}</td>
+                                            <td style={{ padding: '12px' }}>{u.branch?.name || '-'}</td>
+                                            <td style={{ padding: '12px' }}>
+                                                <span style={{
+                                                    padding: '4px 8px', borderRadius: '12px', fontSize: '0.8em',
+                                                    background: u.status === 'approved' ? '#d4edda' : u.status === 'pending' ? '#fff3cd' : '#f8d7da',
+                                                    color: u.status === 'approved' ? '#155724' : u.status === 'pending' ? '#856404' : '#721c24'
+                                                }}>
+                                                    {u.status}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: '12px' }}>
+                                                {u.status !== 'approved' && <button onClick={() => handleStatusUpdate(u._id, 'approved')} style={{ marginRight: '5px', padding: '4px 8px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem' }}>Approve</button>}
+                                                {u.status !== 'rejected' && <button onClick={() => handleStatusUpdate(u._id, 'rejected')} style={{ marginRight: '5px', padding: '4px 8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem' }}>Reject</button>}
+                                                {u.status !== 'blocked'
+                                                    ? <button onClick={() => handleStatusUpdate(u._id, 'blocked')} style={{ padding: '4px 8px', background: '#343a40', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem' }}>Block</button>
+                                                    : <button onClick={() => handleStatusUpdate(u._id, 'approved')} style={{ padding: '4px 8px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem' }}>Unblock</button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    {usersList.length === 0 && (
+                                        <tr><td colSpan="5" style={{ padding: '20px', textAlign: 'center', color: '#888' }}>No users found for this role.</td></tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+
+                    {/* Student Profile Verification */}
+                    {activeTab === 'student-verification' && <StudentVerificationList />}
+
+                    {/* Success Stories Moderation */}
+                    {activeTab === 'success-stories' && (
+                        <div>
+                            <h3 style={{ marginTop: 0 }}>Success Stories Moderation</h3>
+                            <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '16px' }}>
+                                Review and publish alumni success stories submitted for approval.
+                            </p>
+                            <SuccessStories />
+                        </div>
                     )}
                 </div>
-            </div>
+            </main>
         </div>
     );
 }
