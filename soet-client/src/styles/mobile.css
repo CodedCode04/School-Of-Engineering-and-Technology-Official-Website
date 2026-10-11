@@ -1,125 +1,20 @@
 /* Responsive Header and Mobile Menu Overrides */
 
-/* Hide the mobile-only items on desktop */
+/* Hide mobile drawer items on desktop */
 .mobile-only-nav-item {
     display: none;
 }
 
 @media (max-width: 992px) {
-    /* Hide top bar entirely on mobile for a clean look */
+    /* Utility bar remains visible, compact on mobile */
     .top-bar {
-        display: none !important;
-    }
-    
-    /* Make the mobile menu toggle visible */
-    .mobile-menu-toggle {
-        display: block !important;
-        background: transparent;
-        border: none;
-        font-size: 1.8rem;
-        color: var(--primary-blue, #0d3b66);
-        cursor: pointer;
-    }
-    
-    /* Ensure Header starts at top and stays sticky */
-    .header {
-        top: 0 !important;
-        position: sticky !important;
-        z-index: 9999;
-    }
-
-    /* Clean up the logo area, just show SoET on mobile */
-    .logo-text .college-name,
-    .logo-text .university-name {
-        display: none !important;
-    }
-    
-    .logo-text h1 {
-        font-size: 1.8rem !important;
-        margin: 0 !important;
-    }
-    
-    /* Mobile Navigation Drawer */
-    .nav {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: #ffffff;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        padding: 0;
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease-in-out;
-    }
-    
-    .nav.active {
-        max-height: 100vh;
-        overflow-y: auto;
-        border-top: 1px solid #eee;
-    }
-    
-    .nav ul {
-        flex-direction: column !important;
-        gap: 0 !important;
-        padding: 0 !important;
-        align-items: flex-start !important;
         display: flex;
-        margin: 0;
-    }
-    
-    .nav ul li {
-        width: 100%;
-    }
-    
-    .nav ul li a {
-        display: block;
-        padding: 15px 20px;
-        border-bottom: 1px solid #f0f0f0;
-        text-decoration: none;
-        color: var(--primary-blue, #0d3b66);
-        font-size: 1.1rem;
-    }
-    
-    /* Remove hover underlines for mobile */
-    .nav a::after {
-        display: none !important;
-    }
-    
-    .nav ul li:last-child a {
-        border-bottom: none;
-    }
-    
-    /* Show the extra mobile nav items */
-    .mobile-only-nav-item {
-        display: block !important;
-    }
-    
-    /* Enhance the mobile menu nav links a bit more for utility */
-    .nav ul li.mobile-only-nav-item a {
-        background-color: #f9f9f9;
-        color: var(--primary-red, #d90429) !important;
-        font-weight: 600;
-        border-left: 4px solid var(--primary-red, #d90429);
-    }
-    
-    /* Admission button on mobile */
-    .nav .admission-btn {
-        margin: 15px 20px;
-        display: block !important;
-        text-align: center;
-        background: var(--primary-red, #d90429);
-        color: white !important;
-        border-radius: 8px;
     }
 }
 
 @media (max-width: 576px) {
-    .logo-text h1 {
-        font-size: 1.5rem !important;
-    }
-    .logo-container img {
-        height: 45px !important;
+    .logo-lockup-brand {
+        font-size: 1.35rem;
     }
 }
 
