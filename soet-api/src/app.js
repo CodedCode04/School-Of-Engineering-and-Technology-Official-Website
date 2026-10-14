@@ -27,9 +27,10 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 // Global Rate Limiter
 const globalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // Limit each IP to 100 requests per `window`
+    max: process.env.NODE_ENV === 'development' ? 5000 : 500, // Relaxed for dev
     standardHeaders: true,
     legacyHeaders: false,
+    skip: (req) => process.env.NODE_ENV === 'development' || req.ip === '127.0.0.1' || req.ip === '::1',
     message: { error: 'Too many requests, please try again later.' }
 });
 app.use(globalLimiter);
@@ -37,9 +38,10 @@ app.use(globalLimiter);
 // Stricter Rate Limiter for POST routes (Forms/Login)
 const postLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 20,
+    max: process.env.NODE_ENV === 'development' ? 1000 : 30,
     standardHeaders: true,
     legacyHeaders: false,
+    skip: (req) => process.env.NODE_ENV === 'development' || req.ip === '127.0.0.1' || req.ip === '::1',
     message: { error: 'Too many submission attempts, please try again later.' }
 });
 app.use('/api', (req, res, next) => {

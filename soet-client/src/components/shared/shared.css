@@ -1,0 +1,966 @@
+/* ==========================================================================
+   SOET DESIGN SYSTEM - SHARED COMPONENT PRIMITIVES
+   Tokens:
+   - Indigo: 950 #14103A, 900 #1E1760, 800 #2B2185, 600 #4A3FC0, 100 #E8E6FA
+   - Maroon: 900 #5E0F26, 700 #8B1A3D, 600 #A3234B, 100 #F9E3E9
+   - Cream / Peach: 50 #FFFAF3, 100 #FFF1DC, 200 #FDE3BC, 300 #F9D29A
+   - Text: Headings #1E1760, Body #3F3B5C, Muted #6B6787
+   - Borders: rgba(30, 23, 96, 0.12), Input Borders: rgba(30, 23, 96, 0.2)
+   - Radii: 12px controls, 16px cards, 999px pills
+   - Shadows: 0 8px 24px rgba(30, 23, 96, 0.08)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. BUTTONS (min-height 44px / 40px sm, 12px radius, hover lift)
+   -------------------------------------------------------------------------- */
+.soet-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    height: 44px;
+    padding: 0 20px;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+    user-select: none;
+    border: none;
+}
+
+.soet-btn-sm {
+    min-height: 40px;
+    height: 40px;
+    padding: 0 16px;
+    font-size: 14px;
+    border-radius: 10px;
+}
+
+.soet-btn-icon-only {
+    width: 44px;
+    min-width: 44px;
+    padding: 0;
+}
+
+.soet-btn-sm.soet-btn-icon-only {
+    width: 40px;
+    min-width: 40px;
+    padding: 0;
+}
+
+/* Primary: Maroon-700 bg + White text (hover Maroon-900) */
+.soet-btn-primary {
+    background-color: var(--maroon-700, #8B1A3D);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(139, 26, 61, 0.2);
+}
+
+.soet-btn-primary:hover:not(:disabled) {
+    background-color: var(--maroon-900, #5E0F26);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(94, 15, 38, 0.3);
+}
+
+/* Secondary: 2px Indigo-800 outline + Indigo-800 text */
+.soet-btn-secondary {
+    background-color: transparent;
+    color: var(--indigo-800, #2B2185);
+    border: 2px solid var(--indigo-800, #2B2185);
+}
+
+.soet-btn-secondary:hover:not(:disabled) {
+    background-color: var(--indigo-800, #2B2185);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+/* Ghost: Transparent + Indigo-800 text */
+.soet-btn-ghost {
+    background-color: transparent;
+    color: var(--indigo-800, #2B2185);
+    border: 1px solid transparent;
+}
+
+.soet-btn-ghost:hover:not(:disabled) {
+    background-color: var(--indigo-100, #E8E6FA);
+    color: var(--indigo-900, #1E1760);
+    transform: translateY(-1px);
+}
+
+/* Danger: Maroon-700 (for destructive confirms) */
+.soet-btn-danger {
+    background-color: var(--maroon-700, #8B1A3D);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(139, 26, 61, 0.25);
+}
+
+.soet-btn-danger:hover:not(:disabled) {
+    background-color: var(--maroon-900, #5E0F26);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(94, 15, 38, 0.35);
+}
+
+/* Ghost-light: 1px white/40 border + white text (for dark backgrounds) */
+.soet-btn-ghost-light {
+    background-color: transparent;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.soet-btn-ghost-light:hover:not(:disabled) {
+    background-color: rgba(255, 255, 255, 0.14);
+    border-color: #ffffff;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+/* Focus and Disabled */
+.soet-btn:focus-visible {
+    outline: 2px solid var(--indigo-600, #4A3FC0);
+    outline-offset: 2px;
+}
+
+.soet-btn-ghost-light:focus-visible {
+    outline: 2px solid var(--cream-300, #F9D29A);
+    outline-offset: 2px;
+}
+
+.soet-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.soet-btn-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: currentColor;
+    animation: soet-spin 0.8s linear infinite;
+    display: inline-block;
+}
+
+@keyframes soet-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .soet-btn {
+        transition: none !important;
+        transform: none !important;
+    }
+    .soet-btn-spinner {
+        animation-duration: 2s;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   2. CARD (padding built in 24px / 20px mobile, radius 16px, soft shadow)
+   -------------------------------------------------------------------------- */
+.soet-card,
+[data-card].soet-card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    border: 1px solid rgba(30, 23, 96, 0.12);
+    box-shadow: 0 8px 24px rgba(30, 23, 96, 0.08);
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.soet-card-pad-default {
+    padding: 24px;
+}
+
+.soet-card-pad-compact {
+    padding: 20px;
+}
+
+.soet-card-pad-form {
+    padding: 40px;
+}
+
+.soet-card-pad-none {
+    padding: 0;
+}
+
+@media (max-width: 768px) {
+    .soet-card-pad-default {
+        padding: 20px;
+    }
+    .soet-card-pad-compact {
+        padding: 16px;
+    }
+    .soet-card-pad-form {
+        padding: 24px;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   3. FIELD & FORM CONTROLS (48px height, 12px radius, 16px text)
+   -------------------------------------------------------------------------- */
+.soet-field-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+}
+
+.soet-field-label {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--indigo-900, #1E1760);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 1.3;
+}
+
+.soet-field-required {
+    color: var(--maroon-600, #A3234B);
+    font-weight: 700;
+}
+
+.soet-control {
+    font-family: inherit;
+    font-size: 16px;
+    height: 48px;
+    min-height: 48px;
+    width: 100%;
+    background-color: #ffffff;
+    border: 1px solid rgba(30, 23, 96, 0.2);
+    border-radius: 12px;
+    padding: 0 16px;
+    color: var(--text-body, #3F3B5C);
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    line-height: normal;
+}
+
+.soet-control::placeholder {
+    color: var(--text-muted, #6B6787);
+    opacity: 0.85;
+}
+
+.soet-control:focus,
+.soet-control:focus-visible {
+    outline: none !important;
+    border-color: var(--indigo-600, #4A3FC0) !important;
+    box-shadow: 0 0 0 2px var(--indigo-600, #4A3FC0) !important;
+}
+
+.soet-control.is-invalid,
+.soet-control:user-invalid {
+    border-color: var(--maroon-600, #A3234B) !important;
+}
+
+.soet-control:disabled {
+    background-color: rgba(30, 23, 96, 0.04);
+    color: var(--text-muted, #6B6787);
+    cursor: not-allowed;
+}
+
+/* Select Control */
+.soet-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 42px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231E1760' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 16px 16px;
+    cursor: pointer;
+}
+
+/* Textarea Control */
+.soet-textarea {
+    height: auto;
+    min-height: 100px;
+    padding: 12px 16px;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+/* Date Control */
+.soet-date {
+    color-scheme: light;
+}
+
+.soet-date::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.8;
+    filter: invert(12%) sepia(50%) saturate(3000%) hue-rotate(225deg);
+}
+
+.soet-field-helper {
+    font-size: 13px;
+    color: var(--text-muted, #6B6787);
+    margin-top: 6px;
+    line-height: 1.4;
+}
+
+.soet-field-error {
+    font-size: 13px;
+    color: var(--maroon-700, #8B1A3D);
+    margin-top: 6px;
+    line-height: 1.4;
+    font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   4. FILE UPLOAD BOX
+   -------------------------------------------------------------------------- */
+.soet-file-box {
+    border: 1px dashed rgba(30, 23, 96, 0.3);
+    background-color: var(--cream-50, #FFFAF3);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+}
+
+@media (max-width: 640px) {
+    .soet-file-box {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+}
+
+.soet-file-box:focus-within {
+    border-color: var(--indigo-600, #4A3FC0);
+    box-shadow: 0 0 0 2px var(--indigo-600, #4A3FC0);
+}
+
+.soet-file-preview-tile {
+    width: 96px;
+    height: 96px;
+    min-width: 96px;
+    min-height: 96px;
+    border-radius: 12px;
+    background-color: var(--indigo-100, #E8E6FA);
+    border: 1px solid rgba(30, 23, 96, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.soet-file-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.soet-file-preview-icon {
+    font-size: 32px;
+    color: var(--indigo-800, #2B2185);
+}
+
+.soet-file-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+.soet-file-trigger-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.soet-file-name {
+    font-size: 15px;
+    color: var(--text-body, #3F3B5C);
+    font-weight: 500;
+    word-break: break-all;
+}
+
+.soet-file-name.is-empty {
+    color: var(--text-muted, #6B6787);
+}
+
+/* --------------------------------------------------------------------------
+   5. STATUS BADGE (icon + text, 13px/600, 28px tall pill)
+   -------------------------------------------------------------------------- */
+.soet-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 12px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+.soet-badge-approved,
+.soet-badge-verified,
+.soet-badge-active {
+    background-color: var(--indigo-100, #E8E6FA);
+    color: var(--indigo-800, #2B2185);
+}
+
+.soet-badge-pending {
+    background-color: var(--cream-200, #FDE3BC);
+    color: var(--maroon-900, #5E0F26);
+}
+
+.soet-badge-rejected,
+.soet-badge-blocked,
+.soet-badge-failed {
+    background-color: var(--maroon-100, #F9E3E9);
+    color: var(--maroon-700, #8B1A3D);
+}
+
+.soet-badge-draft,
+.soet-badge-inactive {
+    background-color: rgba(232, 230, 250, 0.5);
+    color: var(--text-muted, #6B6787);
+}
+
+.soet-badge-icon {
+    font-size: 12px;
+    line-height: 1;
+}
+
+/* --------------------------------------------------------------------------
+   6. ALERTS (12px radius, 16px padding, 20px icon)
+   -------------------------------------------------------------------------- */
+.soet-alert {
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    font-size: 14px;
+    line-height: 1.5;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.soet-alert-info,
+.soet-alert-success {
+    background-color: var(--indigo-100, #E8E6FA);
+    color: var(--indigo-800, #2B2185);
+    border: 1px solid rgba(43, 33, 133, 0.2);
+}
+
+.soet-alert-error {
+    background-color: var(--maroon-100, #F9E3E9);
+    color: var(--maroon-700, #8B1A3D);
+    border: 1px solid rgba(139, 26, 61, 0.2);
+}
+
+.soet-alert-icon {
+    font-size: 20px;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.soet-alert-body {
+    flex: 1;
+    min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   7. STATE CARD (Centered card, 64px icon circle, title, muted text)
+   -------------------------------------------------------------------------- */
+.soet-state-card {
+    text-align: center;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.soet-state-icon-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: var(--indigo-100, #E8E6FA);
+    color: var(--indigo-800, #2B2185);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.soet-state-title {
+    font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--indigo-900, #1E1760);
+    margin: 0 0 10px 0;
+    line-height: 1.3;
+}
+
+.soet-state-text {
+    font-size: 15px;
+    color: var(--text-muted, #6B6787);
+    line-height: 1.6;
+    margin: 0 0 24px 0;
+    max-width: 480px;
+}
+
+/* Skeleton Loading State */
+.soet-skeleton-block {
+    background-color: var(--indigo-100, #E8E6FA);
+    border-radius: 8px;
+    animation: soet-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes soet-pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .soet-skeleton-block {
+        animation: none;
+        opacity: 0.8;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   8. STAT CARD (44px indigo-100 circle icon, 32px/800 number, 14px muted)
+   -------------------------------------------------------------------------- */
+.soet-stat-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.soet-stat-icon-circle {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: 50%;
+    background-color: var(--indigo-100, #E8E6FA);
+    color: var(--indigo-800, #2B2185);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.soet-stat-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.soet-stat-number {
+    font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--indigo-800, #2B2185);
+    line-height: 1.1;
+    margin-bottom: 4px;
+}
+
+.soet-stat-label {
+    font-size: 14px;
+    color: var(--text-muted, #6B6787);
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+/* --------------------------------------------------------------------------
+   9. PAGE HEADER (28px/800 h1 + optional description + action buttons)
+   -------------------------------------------------------------------------- */
+.soet-page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    width: 100%;
+    box-sizing: border-box;
+    flex-wrap: wrap;
+}
+
+.soet-page-header-text {
+    flex: 1;
+    min-width: 240px;
+}
+
+.soet-page-header-title {
+    font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--indigo-900, #1E1760);
+    margin: 0 0 6px 0;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+}
+
+.soet-page-header-desc {
+    font-size: 15px;
+    color: var(--text-muted, #6B6787);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.soet-page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+    .soet-page-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .soet-page-header-actions {
+        width: 100%;
+    }
+    .soet-page-header-actions .soet-btn {
+        flex: 1;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   10. DATA TABLE (Card 0 padding, toolbar, sticky header, 56px rows, hover cream-50)
+   -------------------------------------------------------------------------- */
+.soet-datatable-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.soet-datatable-toolbar {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid rgba(30, 23, 96, 0.1);
+}
+
+.soet-datatable-search {
+    min-width: 260px;
+    max-width: 380px;
+    flex: 1;
+}
+
+.soet-datatable-search .soet-control {
+    height: 44px;
+    min-height: 44px;
+}
+
+.soet-datatable-filters {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.soet-datatable-filters .soet-control {
+    height: 44px;
+    min-height: 44px;
+}
+
+.soet-datatable-container {
+    width: 100%;
+    overflow-x: auto;
+    position: relative;
+    -webkit-overflow-scrolling: touch;
+}
+
+.soet-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 15px;
+    color: var(--text-body, #3F3B5C);
+    white-space: nowrap;
+}
+
+.soet-table th {
+    background-color: rgba(232, 230, 250, 0.5);
+    color: var(--indigo-900, #1E1760);
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 16px;
+    border-bottom: 1px solid rgba(30, 23, 96, 0.12);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.soet-table td {
+    padding: 16px;
+    height: 56px;
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(30, 23, 96, 0.08);
+    vertical-align: middle;
+}
+
+.soet-table tr:hover td {
+    background-color: var(--cream-50, #FFFAF3);
+}
+
+.soet-table .soet-col-number {
+    text-align: right;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+}
+
+.soet-table-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.soet-table-action-btn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 8px;
+    border: 1px solid rgba(30, 23, 96, 0.12);
+    background-color: transparent;
+    color: var(--indigo-800, #2B2185);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.soet-table-action-btn:hover {
+    background-color: var(--indigo-100, #E8E6FA);
+    border-color: var(--indigo-600, #4A3FC0);
+}
+
+.soet-table-action-btn.is-danger {
+    color: var(--maroon-700, #8B1A3D);
+}
+
+.soet-table-action-btn.is-danger:hover {
+    background-color: var(--maroon-100, #F9E3E9);
+    border-color: var(--maroon-600, #A3234B);
+}
+
+.soet-datatable-footer {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border-top: 1px solid rgba(30, 23, 96, 0.1);
+    font-size: 14px;
+    color: var(--text-muted, #6B6787);
+    flex-wrap: wrap;
+}
+
+.soet-datatable-pagination {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   11. DIALOG (Centered modal, 16px radius, 32px padding, indigo-950/60 overlay)
+   -------------------------------------------------------------------------- */
+.soet-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(20, 16, 58, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 1000;
+    animation: soet-fade-in 0.2s ease;
+}
+
+@keyframes soet-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.soet-dialog-content {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 16px 48px rgba(20, 16, 58, 0.24);
+    padding: 32px;
+    width: 100%;
+    max-width: 520px;
+    box-sizing: border-box;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.soet-dialog-content.is-form {
+    max-width: 720px;
+}
+
+.soet-dialog-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.soet-dialog-title {
+    font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--indigo-900, #1E1760);
+    margin: 0;
+    line-height: 1.3;
+}
+
+.soet-dialog-close {
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    color: var(--text-muted, #6B6787);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.soet-dialog-close:hover {
+    background-color: var(--indigo-100, #E8E6FA);
+    color: var(--indigo-900, #1E1760);
+}
+
+.soet-dialog-body {
+    font-size: 15px;
+    color: var(--text-body, #3F3B5C);
+    line-height: 1.6;
+    margin-bottom: 28px;
+}
+
+.soet-dialog-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   12. TABS (Pill tab list, 1px border, 6px padding, active maroon-700)
+   -------------------------------------------------------------------------- */
+.soet-tabs-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #ffffff;
+    border: 1px solid rgba(30, 23, 96, 0.12);
+    border-radius: 999px;
+    padding: 6px;
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.soet-tab-btn {
+    border-radius: 999px;
+    height: 36px;
+    padding: 0 16px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    background: transparent;
+    color: var(--indigo-800, #2B2185);
+    border: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.soet-tab-btn:hover:not(.is-active) {
+    background-color: var(--indigo-100, #E8E6FA);
+}
+
+.soet-tab-btn.is-active {
+    background-color: var(--maroon-700, #8B1A3D);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(139, 26, 61, 0.2);
+}
+
+.soet-tab-btn:focus-visible {
+    outline: 2px solid var(--indigo-600, #4A3FC0);
+    outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   13. AVATAR (Circle photo or indigo-gradient initials with cream text)
+   -------------------------------------------------------------------------- */
+.soet-avatar {
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+    font-weight: 700;
+    color: var(--cream-100, #FFF1DC);
+    background: linear-gradient(135deg, var(--indigo-950, #14103A) 0%, var(--indigo-800, #2B2185) 100%);
+    overflow: hidden;
+    flex-shrink: 0;
+    user-select: none;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.soet-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.soet-avatar-sm { width: 32px; height: 32px; font-size: 13px; }
+.soet-avatar-md { width: 40px; height: 40px; font-size: 15px; }
+.soet-avatar-lg { width: 48px; height: 48px; font-size: 18px; }
+.soet-avatar-xl { width: 64px; height: 64px; font-size: 24px; }
