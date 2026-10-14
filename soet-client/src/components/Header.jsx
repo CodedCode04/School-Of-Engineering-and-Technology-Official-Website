@@ -69,12 +69,22 @@ export default function Header() {
                     
                     <div className="utility-actions">
                         <div className="utility-text-links">
-                            <Link to="/announcements" className="utility-link" aria-label="Announcements">
+                            <Link 
+                                to="/announcements" 
+                                className={`utility-link ${location.pathname === '/announcements' ? 'utility-link-active' : ''}`}
+                                aria-label="Announcements"
+                                aria-current={location.pathname === '/announcements' ? 'page' : undefined}
+                            >
                                 <i className="fas fa-bell" aria-hidden="true"></i>
                                 <span>Announcements</span>
                             </Link>
                             <span className="utility-divider" aria-hidden="true"></span>
-                            <Link to="/syllabus" className="utility-link" aria-label="Syllabus">
+                            <Link 
+                                to="/syllabus" 
+                                className={`utility-link ${location.pathname === '/syllabus' ? 'utility-link-active' : ''}`} 
+                                aria-label="Syllabus"
+                                aria-current={location.pathname === '/syllabus' ? 'page' : undefined}
+                            >
                                 <i className="fas fa-book-open" aria-hidden="true"></i>
                                 <span>Syllabus</span>
                             </Link>

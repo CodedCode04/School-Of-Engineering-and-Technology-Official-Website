@@ -1,25 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useAuth } from '../context/AuthContext';
-import '../styles/admin-dashboard.css';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import DashboardLayout from '../components/shared/DashboardLayout';
+import Card from '../components/shared/Card';
+import { getRoleNavItems, getRoleDashboardRoute } from '../utils/dashboardNav';
 
 export default function ManageAnnouncements() {
-    const { user } = useAuth();
+    const { user, api } = useAuth();
+    const navigate = useNavigate();
     const [announcements, setAnnouncements] = useState([]);
     const [branches, setBranches] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
+    const [filterCategory, setFilterCategory] = useState('All');
     
     const [formData, setFormData] = useState({
         id: null,
         title: '',
         body: '',
-        category: 'General',
+        category: user?.role === 'tpo' ? 'Placement' : 'General',
         branch: 'All',
         isImportant: false,
         status: 'published',
@@ -28,16 +30,21 @@ export default function ManageAnnouncements() {
     const [coverImage, setCoverImage] = useState(null);
     const [attachments, setAttachments] = useState([]);
 
+    const role = user?.role || 'admin';
+    const navItems = getRoleNavItems(role, 'announcements');
+    const dashboardRoute = getRoleDashboardRoute(role);
+
     useEffect(() => {
         fetchAnnouncements();
         fetchBranches();
     }, []);
 
     const fetchAnnouncements = async () => {
+        setIsLoading(true);
         try {
-            // Using all=true to get drafts and expired ones too for admin/hod
-            const res = await axios.get(`${API_URL}/api/announcements?all=true`, { withCredentials: true });
-            setAnnouncements(res.data.data);
+            const res = await api.get('/announcements?all=true');
+            const data = res.data?.data || res.data || [];
+            setAnnouncements(Array.isArray(data) ? data : []);
         } catch (error) {
             toast.error('Failed to load announcements');
         } finally {
@@ -47,8 +54,8 @@ export default function ManageAnnouncements() {
 
     const fetchBranches = async () => {
         try {
-            const res = await axios.get(`${API_URL}/api/branches`);
-            setBranches(res.data);
+            const res = await api.get('/branches');
+            setBranches(Array.isArray(res.data) ? res.data : []);
         } catch (error) {
             console.error('Error fetching branches:', error);
         }
@@ -59,7 +66,7 @@ export default function ManageAnnouncements() {
             id: null,
             title: '',
             body: '',
-            category: user.role === 'tpo' ? 'Placement' : 'General',
+            category: user?.role === 'tpo' ? 'Placement' : 'General',
             branch: 'All',
             isImportant: false,
             status: 'published',
@@ -75,23 +82,24 @@ export default function ManageAnnouncements() {
             id: announcement._id,
             title: announcement.title,
             body: announcement.body,
-            category: announcement.category,
-            branch: announcement.branch,
-            isImportant: announcement.isImportant,
-            status: announcement.status,
+            category: announcement.category || 'General',
+            branch: announcement.branch || 'All',
+            isImportant: Boolean(announcement.isImportant),
+            status: announcement.status || 'published',
             expiresAt: announcement.expiresAt ? new Date(announcement.expiresAt).toISOString().split('T')[0] : ''
         });
         setIsEditing(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure you want to delete this announcement?')) return;
         try {
-            await axios.delete(`${API_URL}/api/announcements/${id}`, { withCredentials: true });
+            await api.delete(`/announcements/${id}`);
             toast.success('Announcement deleted');
             fetchAnnouncements();
         } catch (error) {
-            toast.error(error.response?.data?.error || 'Failed to delete');
+            toast.error(error.response?.data?.error || 'Failed to delete announcement');
         }
     };
 
@@ -118,17 +126,15 @@ export default function ManageAnnouncements() {
 
         try {
             if (isEditing) {
-                await axios.put(`${API_URL}/api/announcements/${formData.id}`, data, {
-                    withCredentials: true,
+                await api.put(`/announcements/${formData.id}`, data, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
                 toast.success('Announcement updated');
             } else {
-                await axios.post(`${API_URL}/api/announcements`, data, {
-                    withCredentials: true,
+                await api.post(`/announcements`, data, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
-                toast.success('Announcement created');
+                toast.success('Announcement published');
             }
             resetForm();
             fetchAnnouncements();
@@ -141,53 +147,130 @@ export default function ManageAnnouncements() {
         toolbar: [
             [{ 'header': [1, 2, 3, false] }],
             ['bold', 'italic', 'underline', 'strike'],
-            [{'list': 'ordered'}, {'list': 'bullet'}],
-            ['link', 'image'],
-            ['clean']
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            ['link', 'clean']
         ],
     };
 
-    return (
-        <div className="admin-dashboard">
-            <div className="container">
-                <div className="dashboard-header">
-                    <h2>Manage Announcements</h2>
-                </div>
+    const filteredAnnouncements = announcements.filter(item => {
+        if (filterCategory === 'All') return true;
+        return item.category === filterCategory;
+    });
 
-                <div className="dashboard-content" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '20px' }}>
-                    {/* Form Section */}
-                    <div className="card">
-                        <h3>{isEditing ? 'Edit Announcement' : 'Create New'}</h3>
-                        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '15px' }}>
-                            <div className="form-group">
-                                <label>Title *</label>
-                                <input 
-                                    type="text" 
-                                    value={formData.title}
-                                    onChange={(e) => setFormData({...formData, title: e.target.value})}
-                                    required 
-                                    className="form-control"
-                                />
-                            </div>
-                            
-                            <div className="form-group">
-                                <label>Content *</label>
-                                <ReactQuill 
-                                    theme="snow" 
-                                    value={formData.body} 
-                                    onChange={(val) => setFormData({...formData, body: val})} 
+    return (
+        <DashboardLayout
+            title="Manage Announcements"
+            subtitle="Publish, edit, and schedule official circulars & notices"
+            navItems={navItems}
+            activeKey="announcements"
+            headerActions={
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <button
+                        type="button"
+                        onClick={() => navigate('/chat')}
+                        className="soet-btn soet-btn-secondary soet-btn-sm"
+                    >
+                        <i className="fas fa-comments" style={{ color: '#8B1A3D' }}></i>
+                        <span>Chat Rooms</span>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => navigate(dashboardRoute)}
+                        className="soet-btn soet-btn-secondary soet-btn-sm"
+                    >
+                        <i className="fas fa-th-large"></i>
+                        <span>Dashboard</span>
+                    </button>
+                </div>
+            }
+        >
+            <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'minmax(320px, 420px) 1fr',
+                gap: '24px',
+                alignItems: 'start'
+            }}>
+                {/* Form Section */}
+                <Card style={{ position: 'sticky', top: '80px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
+                        <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#1E1760' }}>
+                            {isEditing ? 'Edit Announcement' : 'Compose Notice'}
+                        </h3>
+                        {isEditing && (
+                            <button
+                                type="button"
+                                onClick={resetForm}
+                                style={{
+                                    border: 'none',
+                                    background: '#F1F0F5',
+                                    color: '#666',
+                                    padding: '4px 10px',
+                                    borderRadius: '6px',
+                                    fontSize: '12px',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Cancel Edit
+                            </button>
+                        )}
+                    </div>
+
+                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#1E1760', marginBottom: '6px' }}>
+                                Notice Title *
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.title}
+                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                placeholder="e.g. Mid-Semester Examination Schedule"
+                                required
+                                style={{
+                                    width: '100%',
+                                    padding: '10px 14px',
+                                    borderRadius: '8px',
+                                    border: '1px solid rgba(30, 23, 96, 0.2)',
+                                    fontSize: '14px',
+                                    outline: 'none',
+                                    boxSizing: 'border-box'
+                                }}
+                            />
+                        </div>
+
+                        <div>
+                            <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#1E1760', marginBottom: '6px' }}>
+                                Content & Body *
+                            </label>
+                            <div style={{ backgroundColor: '#ffffff', borderRadius: '8px', overflow: 'hidden' }}>
+                                <ReactQuill
+                                    theme="snow"
+                                    value={formData.body}
+                                    onChange={(val) => setFormData({ ...formData, body: val })}
                                     modules={modules}
-                                    style={{ background: 'white' }}
+                                    style={{ height: '180px', marginBottom: '45px' }}
                                 />
                             </div>
-                            
-                            <div className="form-group">
-                                <label>Category</label>
-                                <select 
-                                    value={formData.category} 
-                                    onChange={(e) => setFormData({...formData, category: e.target.value})}
-                                    className="form-control"
-                                    disabled={user.role === 'tpo'}
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 700, color: '#1E1760', marginBottom: '4px' }}>
+                                    Category
+                                </label>
+                                <select
+                                    value={formData.category}
+                                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                    disabled={user?.role === 'tpo'}
+                                    style={{
+                                        width: '100%',
+                                        padding: '9px 12px',
+                                        borderRadius: '8px',
+                                        border: '1px solid rgba(30, 23, 96, 0.2)',
+                                        fontSize: '13px',
+                                        outline: 'none',
+                                        backgroundColor: '#fff'
+                                    }}
                                 >
                                     <option value="General">General</option>
                                     <option value="Academic">Academic</option>
@@ -198,12 +281,22 @@ export default function ManageAnnouncements() {
                                 </select>
                             </div>
 
-                            <div className="form-group">
-                                <label>Target Branch</label>
-                                <select 
-                                    value={formData.branch} 
-                                    onChange={(e) => setFormData({...formData, branch: e.target.value})}
-                                    className="form-control"
+                            <div>
+                                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 700, color: '#1E1760', marginBottom: '4px' }}>
+                                    Target Branch
+                                </label>
+                                <select
+                                    value={formData.branch}
+                                    onChange={(e) => setFormData({ ...formData, branch: e.target.value })}
+                                    style={{
+                                        width: '100%',
+                                        padding: '9px 12px',
+                                        borderRadius: '8px',
+                                        border: '1px solid rgba(30, 23, 96, 0.2)',
+                                        fontSize: '13px',
+                                        outline: 'none',
+                                        backgroundColor: '#fff'
+                                    }}
                                 >
                                     <option value="All">All Branches</option>
                                     {branches.map(b => (
@@ -211,120 +304,193 @@ export default function ManageAnnouncements() {
                                     ))}
                                 </select>
                             </div>
+                        </div>
 
-                            <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <input 
-                                    type="checkbox" 
-                                    id="isImportant"
-                                    checked={formData.isImportant}
-                                    onChange={(e) => setFormData({...formData, isImportant: e.target.checked})}
-                                />
-                                <label htmlFor="isImportant" style={{ margin: 0 }}>Pin as Important</label>
-                            </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <input
+                                type="checkbox"
+                                id="isImportant"
+                                checked={formData.isImportant}
+                                onChange={(e) => setFormData({ ...formData, isImportant: e.target.checked })}
+                                style={{ width: '16px', height: '16px', accentColor: '#8B1A3D', cursor: 'pointer' }}
+                            />
+                            <label htmlFor="isImportant" style={{ fontSize: '13px', fontWeight: 600, color: '#1E1760', cursor: 'pointer' }}>
+                                Pin as High-Priority Notice 📌
+                            </label>
+                        </div>
 
-                            <div className="form-group">
-                                <label>Status</label>
-                                <select 
-                                    value={formData.status} 
-                                    onChange={(e) => setFormData({...formData, status: e.target.value})}
-                                    className="form-control"
-                                >
-                                    <option value="published">Published</option>
-                                    <option value="draft">Draft</option>
-                                </select>
-                            </div>
+                        <button
+                            type="submit"
+                            className="soet-btn soet-btn-primary"
+                            style={{ width: '100%', marginTop: '6px' }}
+                        >
+                            <i className={isEditing ? 'fas fa-save' : 'fas fa-paper-plane'}></i>
+                            <span>{isEditing ? 'Update Announcement' : 'Publish Notice'}</span>
+                        </button>
+                    </form>
+                </Card>
 
-                            <div className="form-group">
-                                <label>Expires At (Optional)</label>
-                                <input 
-                                    type="date" 
-                                    value={formData.expiresAt}
-                                    onChange={(e) => setFormData({...formData, expiresAt: e.target.value})}
-                                    className="form-control"
-                                />
-                            </div>
+                {/* List Section */}
+                <Card>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginBottom: '16px',
+                        flexWrap: 'wrap',
+                        gap: '12px'
+                    }}>
+                        <div>
+                            <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#1E1760' }}>
+                                Published Announcements
+                            </h3>
+                            <span style={{ fontSize: '12px', color: '#6B6787' }}>
+                                Showing {filteredAnnouncements.length} records
+                            </span>
+                        </div>
 
-                            <div className="form-group">
-                                <label>Cover Image</label>
-                                <input 
-                                    type="file" 
-                                    accept="image/*"
-                                    onChange={(e) => setCoverImage(e.target.files[0])}
-                                    className="form-control"
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Attachments (Multiple)</label>
-                                <input 
-                                    type="file" 
-                                    multiple
-                                    onChange={(e) => setAttachments(e.target.files)}
-                                    className="form-control"
-                                />
-                            </div>
-
-                            <div className="form-actions" style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                                <button type="submit" className="btn-primary">
-                                    {isEditing ? 'Update' : 'Publish'}
-                                </button>
-                                {isEditing && (
-                                    <button type="button" className="btn-secondary" onClick={resetForm}>
-                                        Cancel
-                                    </button>
-                                )}
-                            </div>
-                        </form>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <label style={{ fontSize: '12px', fontWeight: 600, color: '#6B6787' }}>Filter:</label>
+                            <select
+                                value={filterCategory}
+                                onChange={e => setFilterCategory(e.target.value)}
+                                style={{
+                                    padding: '6px 12px',
+                                    borderRadius: '6px',
+                                    border: '1px solid rgba(30,23,96,0.15)',
+                                    fontSize: '12px',
+                                    backgroundColor: '#fff'
+                                }}
+                            >
+                                <option value="All">All Categories</option>
+                                <option value="General">General</option>
+                                <option value="Academic">Academic</option>
+                                <option value="Exam">Exam</option>
+                                <option value="Event">Event</option>
+                                <option value="News">News</option>
+                                <option value="Placement">Placement</option>
+                            </select>
+                        </div>
                     </div>
 
-                    {/* List Section */}
-                    <div className="card">
-                        <h3>Existing Announcements</h3>
-                        {isLoading ? <p>Loading...</p> : (
-                            <div className="table-responsive" style={{ marginTop: '15px' }}>
-                                <table className="admin-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Title</th>
-                                            <th>Category</th>
-                                            <th>Status</th>
-                                            <th>Pinned</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {announcements.map(item => (
-                                            <tr key={item._id}>
-                                                <td>{item.title}</td>
-                                                <td>{item.category}</td>
-                                                <td>
-                                                    <span className={`status-badge ${item.status}`}>
-                                                        {item.status}
+                    {isLoading ? (
+                        <div style={{ padding: '40px', textAlign: 'center', color: '#6B6787' }}>
+                            <i className="fas fa-circle-notch fa-spin" style={{ color: '#8B1A3D', fontSize: '24px', marginBottom: '8px' }}></i>
+                            <div>Loading announcements...</div>
+                        </div>
+                    ) : filteredAnnouncements.length === 0 ? (
+                        <div style={{ padding: '40px', textAlign: 'center', color: '#6B6787', backgroundColor: '#FBFBFE', borderRadius: '12px' }}>
+                            <i className="fas fa-bullhorn" style={{ fontSize: '32px', color: '#9CA3AF', marginBottom: '8px' }}></i>
+                            <div style={{ fontSize: '14px', fontWeight: 600 }}>No announcements found</div>
+                            <div style={{ fontSize: '12px', marginTop: '4px' }}>Compose and publish a notice to broadcast to the institution.</div>
+                        </div>
+                    ) : (
+                        <div style={{ overflowX: 'auto', borderRadius: '8px', border: '1px solid rgba(30,23,96,0.08)' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', textAlign: 'left' }}>
+                                <thead>
+                                    <tr style={{ backgroundColor: '#F8F7FC', borderBottom: '2px solid rgba(30,23,96,0.08)', color: '#1E1760', fontWeight: 700 }}>
+                                        <th style={{ padding: '12px 14px' }}>Notice</th>
+                                        <th style={{ padding: '12px 14px' }}>Category</th>
+                                        <th style={{ padding: '12px 14px' }}>Status</th>
+                                        <th style={{ padding: '12px 14px' }}>Pinned</th>
+                                        <th style={{ padding: '12px 14px', textAlign: 'right' }}>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredAnnouncements.map(item => (
+                                        <tr
+                                            key={item._id}
+                                            style={{
+                                                borderBottom: '1px solid rgba(30,23,96,0.06)',
+                                                backgroundColor: item.isImportant ? '#FFFDF5' : 'transparent'
+                                            }}
+                                        >
+                                            <td style={{ padding: '12px 14px' }}>
+                                                <div style={{ fontWeight: 700, color: '#1E1760', fontSize: '13.5px' }}>
+                                                    {item.title}
+                                                </div>
+                                                <div style={{ fontSize: '11px', color: '#888', marginTop: '2px' }}>
+                                                    {new Date(item.createdAt).toLocaleDateString()}
+                                                </div>
+                                            </td>
+                                            <td style={{ padding: '12px 14px' }}>
+                                                <span style={{
+                                                    backgroundColor: '#EFF6FF',
+                                                    color: '#1D4ED8',
+                                                    padding: '3px 8px',
+                                                    borderRadius: '4px',
+                                                    fontSize: '11px',
+                                                    fontWeight: 600
+                                                }}>
+                                                    {item.category}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: '12px 14px' }}>
+                                                <span style={{
+                                                    backgroundColor: item.status === 'published' ? '#ECFDF5' : '#FFFBEB',
+                                                    color: item.status === 'published' ? '#047857' : '#B45309',
+                                                    padding: '3px 8px',
+                                                    borderRadius: '4px',
+                                                    fontSize: '11px',
+                                                    fontWeight: 600,
+                                                    textTransform: 'capitalize'
+                                                }}>
+                                                    {item.status}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: '12px 14px' }}>
+                                                {item.isImportant ? (
+                                                    <span style={{ color: '#8B1A3D', fontWeight: 700, fontSize: '12px' }}>
+                                                        <i className="fas fa-thumbtack"></i> Pinned
                                                     </span>
-                                                </td>
-                                                <td>{item.isImportant ? 'Yes' : 'No'}</td>
-                                                <td className="actions-cell">
-                                                    <button onClick={() => handleEdit(item)} className="btn-secondary btn-sm" title="Edit">
+                                                ) : (
+                                                    <span style={{ color: '#aaa', fontSize: '12px' }}>Standard</span>
+                                                )}
+                                            </td>
+                                            <td style={{ padding: '12px 14px', textAlign: 'right' }}>
+                                                <div style={{ display: 'inline-flex', gap: '6px' }}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleEdit(item)}
+                                                        title="Edit"
+                                                        style={{
+                                                            padding: '5px 10px',
+                                                            borderRadius: '6px',
+                                                            border: '1px solid rgba(30,23,96,0.15)',
+                                                            background: '#ffffff',
+                                                            color: '#1E1760',
+                                                            cursor: 'pointer',
+                                                            fontSize: '12px'
+                                                        }}
+                                                    >
                                                         <i className="fas fa-edit"></i>
                                                     </button>
-                                                    <button onClick={() => handleDelete(item._id)} className="btn-secondary btn-sm" style={{ backgroundColor: '#fee2e2', color: '#dc2626', borderColor: '#fca5a5' }} title="Delete">
-                                                        <i className="fas fa-trash"></i>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleDelete(item._id)}
+                                                        title="Delete"
+                                                        style={{
+                                                            padding: '5px 10px',
+                                                            borderRadius: '6px',
+                                                            border: '1px solid #FCA5A5',
+                                                            background: '#FEE2E2',
+                                                            color: '#B91C1C',
+                                                            cursor: 'pointer',
+                                                            fontSize: '12px'
+                                                        }}
+                                                    >
+                                                        <i className="fas fa-trash-alt"></i>
                                                     </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                        {announcements.length === 0 && (
-                                            <tr>
-                                                <td colSpan="5" style={{ textAlign: 'center' }}>No announcements found</td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
-                    </div>
-                </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </Card>
             </div>
-        </div>
+        </DashboardLayout>
     );
 }

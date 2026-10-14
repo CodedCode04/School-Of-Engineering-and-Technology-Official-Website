@@ -60,6 +60,7 @@ export default function App() {
             <Route path="/announcements" element={<Announcements />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/facilities" element={<Facilities />} />
+            <Route path="/syllabus" element={<Syllabus />} />
             <Route path="*" element={<NotFound />} />
           </Route>
 
@@ -81,11 +82,11 @@ export default function App() {
           <Route path="/student/docs" element={<ProtectedRoute allowedRoles={['student']}><StudentDocs /></ProtectedRoute>} />
           <Route path="/student/portfolio" element={<ProtectedRoute allowedRoles={['student']}><StudentPortfolio /></ProtectedRoute>} />
           <Route path="/tpo-dashboard" element={<ProtectedRoute allowedRoles={['tpo']}><TpoDashboard /></ProtectedRoute>} />
+          <Route path="/alumni-dashboard" element={<Navigate to="/alumni" replace />} />
           <Route path="/alumni/*" element={<ProtectedRoute allowedRoles={['alumni']}><AlumniDashboard /></ProtectedRoute>} />
           <Route path="/alumni/profile-completion" element={<ProtectedRoute allowedRoles={['alumni']}><AlumniProfileCompletion /></ProtectedRoute>} />
           <Route path="/manage-announcements" element={<ProtectedRoute allowedRoles={['admin', 'hod', 'tpo']}><ManageAnnouncements /></ProtectedRoute>} />
           <Route path="/manage-syllabus" element={<ProtectedRoute allowedRoles={['admin', 'hod']}><ManageSyllabus /></ProtectedRoute>} />
-          <Route path="/syllabus" element={<ProtectedRoute allowedRoles={['admin', 'hod', 'teacher', 'student']}><Syllabus /></ProtectedRoute>} />
           <Route path="/audit-logs" element={<ProtectedRoute allowedRoles={['admin']}><AuditLog /></ProtectedRoute>} />
           <Route path="/notifications" element={<ProtectedRoute allowedRoles={['admin', 'hod', 'teacher', 'student', 'tpo', 'alumni']}><NotificationsPage /></ProtectedRoute>} />
           <Route path="/notifications/send" element={<ProtectedRoute allowedRoles={['admin', 'hod', 'tpo']}><SendNotificationPage /></ProtectedRoute>} />
@@ -94,11 +95,22 @@ export default function App() {
 
           {/* Cross-role Alumni Features */}
           <Route path="/alumni-directory" element={<ProtectedRoute allowedRoles={['admin', 'hod', 'tpo', 'student', 'alumni']}><AlumniDirectory /></ProtectedRoute>} />
-          <Route path="/job-referrals" element={<ProtectedRoute allowedRoles={['student', 'tpo', 'alumni']}><JobReferrals /></ProtectedRoute>} />
+          <Route path="/job-referrals" element={<ProtectedRoute allowedRoles={['admin', 'hod', 'student', 'tpo', 'alumni']}><JobReferrals /></ProtectedRoute>} />
           <Route path="/mentorship-requests" element={<ProtectedRoute allowedRoles={['student', 'alumni']}><MentorshipRequests /></ProtectedRoute>} />
           <Route path="/success-stories" element={<Layout><SuccessStories /></Layout>} />
 
-          
+          {/* Dev-only UI Kit Showcase */}
+          {import.meta.env.DEV && (
+            <Route
+              path="/__ui"
+              element={
+                <React.Suspense fallback={<div style={{ padding: '40px', color: '#1E1760', fontFamily: 'Inter, sans-serif' }}>Loading UI Kit...</div>}>
+                  {React.createElement(React.lazy(() => import('./dev/UiKitPage')))}
+                </React.Suspense>
+              }
+            />
+          )}
+
           {/* Legacy redirects */}
           <Route path="/index.html" element={<Navigate to="/" replace />} />
           <Route path="/pages/about.html" element={<Navigate to="/about" replace />} />

@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticate } from '../middleware/auth.js';
-import { getRooms, getMessages, deleteMessage } from '../controllers/chat.controller.js';
+import { getRooms, getMessages, sendMessage, deleteMessage } from '../controllers/chat.controller.js';
 
 const router = express.Router();
 
@@ -8,6 +8,7 @@ router.use(authenticate);
 
 router.get('/rooms', getRooms);
 router.get('/rooms/:roomId/messages', getMessages);
+router.post('/rooms/:roomId/messages', sendMessage);
 router.delete('/messages/:messageId', deleteMessage);
 
 import multer from 'multer';

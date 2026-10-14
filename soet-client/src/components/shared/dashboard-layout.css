@@ -1,0 +1,589 @@
+/* ==========================================================================
+   SOET DASHBOARD LAYOUT STYLES
+   Role-based unified dashboard shell:
+   - 264px Indigo-950 sidebar on desktop (>= 1024px)
+   - Mobile off-canvas drawer with backdrop (< 1024px)
+   - 64px clean topbar with hamburger, breadcrumbs, actions, notification bell
+   - Cream-50 main workspace with zero horizontal overflow
+   ========================================================================== */
+
+/* 1. ROOT CONTAINER */
+.soet-dash-root {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--cream-50, #FFFAF3);
+    font-family: var(--font-body, 'Inter', sans-serif);
+    color: var(--text-body, #3F3B5C);
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* 2. SIDEBAR (DESKTOP >= 1024px) */
+.soet-dash-sidebar {
+    width: 264px;
+    min-width: 264px;
+    max-width: 264px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    left: 0;
+    background: linear-gradient(180deg, var(--indigo-950, #14103A) 0%, var(--indigo-900, #1E1760) 100%);
+    border-right: 1px solid rgba(232, 230, 250, 0.08);
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    user-select: none;
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Sidebar Header Brand Lockup */
+.soet-dash-brand {
+    padding: 20px 20px 18px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.soet-dash-brand:focus-visible {
+    outline: 2px solid var(--cream-300, #F9D29A);
+    outline-offset: 2px;
+    border-radius: 8px;
+}
+
+.soet-dash-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.soet-dash-brand-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.soet-dash-brand-title {
+    font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+.soet-dash-brand-subtitle {
+    font-size: 11px;
+    color: var(--cream-200, #FDE3BC);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Sidebar Navigation Items */
+.soet-dash-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Scrollbar on sidebar nav */
+.soet-dash-nav::-webkit-scrollbar {
+    width: 5px;
+}
+.soet-dash-nav::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+}
+
+.soet-dash-nav-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(232, 230, 250, 0.45);
+    padding: 12px 12px 6px 12px;
+}
+
+.soet-dash-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    color: rgba(232, 230, 250, 0.78);
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    position: relative;
+    box-sizing: border-box;
+    transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+.soet-dash-nav-item:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateX(2px);
+}
+
+.soet-dash-nav-item:focus-visible {
+    outline: 2px solid var(--cream-300, #F9D29A);
+    outline-offset: 2px;
+}
+
+.soet-dash-nav-item.active {
+    color: #ffffff;
+    font-weight: 700;
+    background: linear-gradient(90deg, rgba(74, 63, 192, 0.35) 0%, rgba(30, 23, 96, 0.15) 100%);
+}
+
+.soet-dash-nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    background-color: var(--cream-300, #F9D29A);
+    border-radius: 0 3px 3px 0;
+}
+
+.soet-dash-nav-icon {
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    color: rgba(232, 230, 250, 0.7);
+    transition: color 0.18s ease;
+}
+
+.soet-dash-nav-item:hover .soet-dash-nav-icon,
+.soet-dash-nav-item.active .soet-dash-nav-icon {
+    color: var(--cream-200, #FDE3BC);
+}
+
+.soet-dash-nav-label {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.soet-dash-nav-badge {
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    background-color: var(--maroon-700, #8B1A3D);
+    color: #ffffff;
+    line-height: 1.2;
+}
+
+/* Sidebar Footer User Card */
+.soet-dash-user-card {
+    padding: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(20, 16, 58, 0.4);
+}
+
+.soet-dash-user-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.soet-dash-user-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.soet-dash-user-role {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--cream-200, #FDE3BC);
+}
+
+.soet-dash-logout-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+    color: rgba(255, 255, 255, 0.8);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.soet-dash-logout-btn:hover {
+    background: var(--maroon-700, #8B1A3D);
+    border-color: var(--maroon-700, #8B1A3D);
+    color: #ffffff;
+}
+
+.soet-dash-logout-btn:focus-visible {
+    outline: 2px solid var(--cream-300, #F9D29A);
+    outline-offset: 2px;
+}
+
+/* 3. MAIN WORKSPACE */
+.soet-dash-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--cream-50, #FFFAF3);
+}
+
+/* Topbar */
+.soet-dash-topbar {
+    height: 64px;
+    min-height: 64px;
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--border-default, rgba(30, 23, 96, 0.08));
+    box-shadow: 0 2px 8px rgba(30, 23, 96, 0.03);
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    gap: 16px;
+}
+
+.soet-dash-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+
+.soet-dash-hamburger {
+    display: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--border-input, rgba(30, 23, 96, 0.15));
+    background: transparent;
+    color: var(--indigo-900, #1E1760);
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.soet-dash-hamburger:hover {
+    background-color: var(--indigo-100, #E8E6FA);
+}
+
+.soet-dash-topbar-title-wrap {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.soet-dash-topbar-h1 {
+    font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--indigo-900, #1E1760);
+    line-height: 1.2;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.soet-dash-topbar-crumb {
+    font-size: 12px;
+    color: var(--text-muted, #6B6787);
+    margin: 2px 0 0 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.soet-dash-topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+/* Main Content Wrapper */
+.soet-dash-content {
+    flex: 1;
+    padding: 28px 32px 48px 32px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+/* 4. NOTIFICATION BELL STYLES */
+.soet-bell-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.soet-bell-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--border-input, rgba(30, 23, 96, 0.15));
+    background: transparent;
+    color: var(--indigo-900, #1E1760);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.18s ease;
+}
+
+.soet-bell-btn:hover {
+    background-color: var(--indigo-100, #E8E6FA);
+}
+
+.soet-bell-btn:focus-visible {
+    outline: 2px solid var(--indigo-600, #4A3FC0);
+    outline-offset: 2px;
+}
+
+.soet-bell-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background-color: var(--maroon-700, #8B1A3D);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: var(--font-heading, sans-serif);
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffffff;
+}
+
+.soet-bell-popover {
+    position: absolute;
+    right: 0;
+    top: 48px;
+    width: 320px;
+    max-width: calc(100vw - 32px);
+    background-color: #ffffff;
+    border: 1px solid var(--border-default, rgba(30, 23, 96, 0.12));
+    border-radius: 16px;
+    box-shadow: 0 12px 32px rgba(30, 23, 96, 0.15);
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.soet-bell-header {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-default, rgba(30, 23, 96, 0.08));
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+}
+
+.soet-bell-header-title {
+    font-family: var(--font-heading, sans-serif);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--indigo-900, #1E1760);
+    margin: 0;
+}
+
+.soet-bell-mark-all {
+    background: none;
+    border: none;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--indigo-800, #2B2185);
+    cursor: pointer;
+    padding: 0;
+}
+
+.soet-bell-mark-all:hover {
+    color: var(--maroon-700, #8B1A3D);
+    text-decoration: underline;
+}
+
+.soet-bell-list {
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.soet-bell-empty {
+    padding: 28px 16px;
+    text-align: center;
+    color: var(--text-muted, #6B6787);
+    font-size: 13.5px;
+}
+
+.soet-bell-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-default, rgba(30, 23, 96, 0.06));
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.soet-bell-item:hover {
+    background-color: var(--indigo-100, #E8E6FA);
+}
+
+.soet-bell-item.unread {
+    background-color: rgba(232, 230, 250, 0.35);
+}
+
+.soet-bell-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.soet-bell-item-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--indigo-900, #1E1760);
+    margin: 0;
+}
+
+.soet-bell-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--maroon-700, #8B1A3D);
+    flex-shrink: 0;
+}
+
+.soet-bell-item-body {
+    font-size: 12.5px;
+    color: var(--text-body, #3F3B5C);
+    margin: 0 0 4px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.soet-bell-item-time {
+    font-size: 11px;
+    color: var(--text-muted, #6B6787);
+}
+
+.soet-bell-footer {
+    padding: 10px 16px;
+    border-top: 1px solid var(--border-default, rgba(30, 23, 96, 0.08));
+    text-align: center;
+    background-color: var(--cream-50, #FFFAF3);
+}
+
+.soet-bell-view-all {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--indigo-800, #2B2185);
+    text-decoration: none;
+}
+
+.soet-bell-view-all:hover {
+    color: var(--maroon-700, #8B1A3D);
+    text-decoration: underline;
+}
+
+/* 5. RESPONSIVE MOBILE DRAWER (< 1024px) */
+.soet-dash-backdrop {
+    display: none;
+}
+
+@media (max-width: 1023px) {
+    .soet-dash-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 280px;
+        max-width: 82vw;
+        height: 100vh;
+        transform: translateX(-100%);
+        box-shadow: none;
+        z-index: 1050;
+    }
+
+    .soet-dash-sidebar.drawer-open {
+        transform: translateX(0);
+        box-shadow: 0 0 32px rgba(20, 16, 58, 0.5);
+    }
+
+    .soet-dash-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 16, 58, 0.65);
+        backdrop-filter: blur(4px);
+        z-index: 1040;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+    }
+
+    .soet-dash-backdrop.drawer-open {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .soet-dash-hamburger {
+        display: inline-flex;
+    }
+
+    .soet-dash-topbar {
+        padding: 0 16px;
+    }
+
+    .soet-dash-content {
+        padding: 20px 16px 36px 16px;
+    }
+}

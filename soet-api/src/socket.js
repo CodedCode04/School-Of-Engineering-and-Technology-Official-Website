@@ -4,9 +4,14 @@ import jwt from 'jsonwebtoken';
 let io;
 
 export const initSocket = (server) => {
+    const rawOrigins = process.env.CLIENT_ORIGINS 
+        ? process.env.CLIENT_ORIGINS.split(',').map(o => o.trim())
+        : [];
+    const origins = [...new Set([...rawOrigins, 'http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:5000'])];
+
     io = new Server(server, {
         cors: {
-            origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+            origin: origins,
             methods: ['GET', 'POST', 'PUT', 'DELETE'],
             credentials: true
         }

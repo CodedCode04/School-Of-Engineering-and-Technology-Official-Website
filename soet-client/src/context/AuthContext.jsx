@@ -8,6 +8,7 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [token, setToken] = useState(() => localStorage.getItem('token'));
     const [loading, setLoading] = useState(true);
 
     const api = axios.create({
@@ -17,9 +18,9 @@ export const AuthProvider = ({ children }) => {
 
     // Add interceptor to include token in header if present
     api.interceptors.request.use(config => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+        const storedToken = token || localStorage.getItem('token');
+        if (storedToken) {
+            config.headers.Authorization = `Bearer ${storedToken}`;
         }
         return config;
     });
@@ -29,6 +30,7 @@ export const AuthProvider = ({ children }) => {
         error => {
             if (error.response?.status === 401) {
                 localStorage.removeItem('token');
+                setToken(null);
                 setUser(null);
             }
             return Promise.reject(error);
@@ -37,8 +39,9 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const loadUser = async () => {
-            const token = localStorage.getItem('token');
-            if (token) {
+            const storedToken = localStorage.getItem('token');
+            if (storedToken) {
+                setToken(storedToken);
                 try {
                     const res = await api.get('/auth/me');
                     setUser(res.data.user);
@@ -53,7 +56,9 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         const res = await api.post('/auth/login', { email, password });
-        localStorage.setItem('token', res.data.token);
+        const newToken = res.data.token;
+        localStorage.setItem('token', newToken);
+        setToken(newToken);
         setUser(res.data.user);
         return res.data.user;
     };
@@ -70,12 +75,13 @@ export const AuthProvider = ({ children }) => {
             console.error('Logout error', error);
         }
         localStorage.removeItem('token');
+        setToken(null);
         setUser(null);
         window.location.href = '/login';
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, logout, register, api }}>
+        <AuthContext.Provider value={{ user, token, loading, login, logout, register, api }}>
             {children}
         </AuthContext.Provider>
     );

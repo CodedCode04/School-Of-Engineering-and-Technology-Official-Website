@@ -1,0 +1,893 @@
+/* ==========================================================================
+   SOET STUDENT FORM PAGES & FORMPAGELAYOUT STYLES
+   Engineering Design System Tokens:
+   - Indigo Scale: 950 #14103A, 900 #1E1760, 800 #2B2185, 600 #4A3FC0, 100 #E8E6FA
+   - Maroon Scale: 900 #5E0F26, 700 #8B1A3D, 600 #A3234B, 100 #F9E3E9
+   - Cream / Peach: 50 #FFFAF3, 100 #FFF1DC, 200 #FDE3BC, 300 #F9D29A
+   - Text: Headings indigo-900, Body #3F3B5C, Muted #6B6787
+   - Input borders: rgba(30, 23, 96, 0.2)
+   - Fonts: "Plus Jakarta Sans" 700/800, "Inter", "JetBrains Mono"
+   - Radius: 12px controls / 16px cards
+   - Shadows: 0 8px 24px rgba(30, 23, 96, 0.08)
+   - Guardrails: G1-G8 strictly enforced
+   ========================================================================== */
+
+/* Page Root */
+.form-page-root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--cream-50, #FFFAF3);
+    color: var(--text-body, #3F3B5C);
+    font-family: var(--font-body, 'Inter', sans-serif);
+    overflow-x: hidden;
+}
+
+/* 1. TOP BAR (64px, Indigo-950, Full Width) */
+.form-page-topbar {
+    height: 64px;
+    min-height: 64px;
+    background-color: var(--indigo-950, #14103A);
+    border-bottom: 1px solid rgba(232, 230, 250, 0.12);
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 10;
+    width: 100%;
+}
+
+.form-page-topbar-inner {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 var(--space-24, 24px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-16, 16px);
+}
+
+@media (max-width: 768px) {
+    .form-page-topbar-inner {
+        padding: 0 var(--space-16, 16px);
+    }
+}
+
+/* Topbar Brand Lockup */
+.form-page-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-12, 12px);
+    text-decoration: none;
+    color: #ffffff;
+    min-width: 0;
+}
+
+.form-page-brand:focus-visible {
+    outline: 2px solid var(--cream-300, #F9D29A);
+    outline-offset: 4px;
+    border-radius: 8px;
+}
+
+.form-page-logo-img {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.form-page-brand-name {
+    font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.03em;
+    line-height: 1;
+}
+
+.form-page-brand-divider {
+    width: 1px;
+    height: 32px;
+    background-color: rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+}
+
+.form-page-brand-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    min-width: 0;
+}
+
+.form-page-brand-title {
+    font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.form-page-brand-sub {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--cream-200, #FDE3BC);
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+    .form-page-brand-divider,
+    .form-page-brand-text {
+        display: none;
+    }
+}
+
+/* Topbar Logout Button */
+.form-page-logout-btn {
+    height: 40px !important;
+    min-height: 40px !important;
+    padding: 0 16px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    border-radius: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    background-color: transparent !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    text-decoration: none !important;
+}
+
+.form-page-logout-btn:hover {
+    background-color: rgba(255, 255, 255, 0.12) !important;
+    border-color: #ffffff !important;
+    color: #ffffff !important;
+    transform: translateY(-1px) !important;
+}
+
+.form-page-logout-btn:focus-visible {
+    outline: 2px solid var(--cream-300, #F9D29A) !important;
+    outline-offset: 2px !important;
+}
+
+.form-page-logout-icon {
+    font-size: 16px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* 2. HEADER STRIP (160-200px tall, Indigo-950 to Indigo-900 with blueprint grid) */
+.form-page-header-strip {
+    min-height: 160px;
+    padding: 36px 0;
+    background: linear-gradient(135deg, var(--indigo-950, #14103A) 0%, var(--indigo-900, #1E1760) 100%);
+    position: relative;
+    border-bottom: 1px solid rgba(30, 23, 96, 0.1);
+    display: flex;
+    align-items: center;
+}
+
+.form-page-blueprint-grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(to right, rgba(232, 230, 250, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(232, 230, 250, 0.05) 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.form-page-header-container {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 var(--space-24, 24px);
+    position: relative;
+    z-index: 1;
+    text-align: left;
+}
+
+@media (max-width: 768px) {
+    .form-page-header-container {
+        padding: 0 var(--space-16, 16px);
+    }
+}
+
+.form-page-title {
+    font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin: 0 0 8px 0;
+}
+
+.form-page-subtitle {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--cream-200, #FDE3BC);
+    margin: 0;
+    max-width: 760px;
+}
+
+/* 3. BODY (Cream-50, 40px gap below strip, 64px bottom padding) */
+.form-page-body {
+    flex: 1;
+    background-color: var(--cream-50, #FFFAF3);
+    padding-top: 40px;
+    padding-bottom: 64px;
+}
+
+.form-page-body-container {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 var(--space-24, 24px);
+}
+
+@media (max-width: 768px) {
+    .form-page-body-container {
+        padding: 0 var(--space-16, 16px);
+    }
+}
+
+/* Form Card Styling (40px desktop, 24px mobile padding built in) */
+.form-card-main,
+[data-card].form-card-main {
+    background-color: #ffffff;
+    border-radius: 16px;
+    border: 1px solid rgba(30, 23, 96, 0.08);
+    box-shadow: 0 8px 24px rgba(30, 23, 96, 0.08);
+    padding: 40px;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+    .form-card-main,
+    [data-card].form-card-main {
+        padding: 24px;
+    }
+}
+
+/* Alerts (Error / Rejection) */
+.form-alert-error {
+    background-color: var(--maroon-100, #F9E3E9);
+    color: var(--maroon-700, #8B1A3D);
+    border: 1px solid rgba(139, 26, 61, 0.2);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.form-alert-icon {
+    font-size: 20px;
+    line-height: 1;
+    color: var(--maroon-700, #8B1A3D);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.form-alert-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.form-alert-content strong {
+    color: var(--maroon-900, #5E0F26);
+    font-weight: 700;
+}
+
+
+/* ==========================================================================
+   FORM FIELDSETS & SECTION HEADERS
+   ========================================================================== */
+.form-section-fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.form-section-fieldset + .form-section-fieldset {
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 1px solid rgba(30, 23, 96, 0.1);
+}
+
+.form-section-legend {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0;
+    margin: 0 0 24px 0;
+    width: 100%;
+    border: none;
+}
+
+.form-section-icon-circle {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    border-radius: 50%;
+    background-color: var(--indigo-100, #E8E6FA);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--indigo-800, #2B2185);
+    flex-shrink: 0;
+}
+
+.form-section-icon-circle i {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.form-section-title {
+    font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--indigo-900, #1E1760);
+    line-height: 1.3;
+}
+
+/* ==========================================================================
+   FORM GRID LAYOUT (2-column on md+, 1-column on mobile, min-width: 0)
+   ========================================================================== */
+.form-fields-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+    row-gap: 20px;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .form-fields-grid {
+        grid-template-columns: 1fr;
+        row-gap: 16px;
+    }
+}
+
+.form-field-span-full {
+    grid-column: 1 / -1;
+}
+
+/* ==========================================================================
+   FIELD PRIMITIVES & INPUT CONTROLS
+   - 48px height
+   - 12px radius
+   - 1px border rgba(30,23,96,.2)
+   - 16px Inter text (inherit)
+   - 2px indigo-600 focus ring
+   ========================================================================== */
+.form-field-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    width: 100%;
+}
+
+.form-field-label {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--indigo-900, #1E1760);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+.form-field-required {
+    color: var(--maroon-600, #A3234B);
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.form-input-control {
+    font-family: inherit;
+    font-size: 16px;
+    height: 48px;
+    min-height: 48px;
+    width: 100%;
+    background-color: #ffffff;
+    border: 1px solid rgba(30, 23, 96, 0.2);
+    border-radius: 12px;
+    padding: 0 16px;
+    color: var(--text-body, #3F3B5C);
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    line-height: 48px;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.form-input-control::placeholder {
+    color: var(--text-muted, #6B6787);
+    opacity: 0.85;
+}
+
+.form-input-control:focus,
+.form-input-control:focus-visible {
+    outline: none !important;
+    border-color: var(--indigo-600, #4A3FC0) !important;
+    box-shadow: 0 0 0 2px var(--indigo-600, #4A3FC0) !important;
+}
+
+.form-input-control:user-invalid {
+    border-color: var(--maroon-600, #A3234B) !important;
+}
+
+.form-input-control:disabled {
+    background-color: rgba(30, 23, 96, 0.04);
+    color: var(--text-muted, #6B6787);
+    cursor: not-allowed;
+}
+
+/* Branch Select Control with Custom 16px Chevron */
+.form-select-control {
+    font-family: inherit;
+    font-size: 16px;
+    height: 48px;
+    min-height: 48px;
+    width: 100%;
+    background-color: #ffffff;
+    border: 1px solid rgba(30, 23, 96, 0.2);
+    border-radius: 12px;
+    padding: 0 40px 0 16px;
+    color: var(--text-body, #3F3B5C);
+    box-sizing: border-box;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231E1760' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 16px 16px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-select-control:focus,
+.form-select-control:focus-visible {
+    outline: none !important;
+    border-color: var(--indigo-600, #4A3FC0) !important;
+    box-shadow: 0 0 0 2px var(--indigo-600, #4A3FC0) !important;
+}
+
+.form-select-control:user-invalid {
+    border-color: var(--maroon-600, #A3234B) !important;
+}
+
+.form-select-control.is-placeholder,
+.form-select-control option[value=""] {
+    color: var(--text-muted, #6B6787);
+}
+
+.form-select-control option {
+    color: var(--text-body, #3F3B5C);
+    background-color: #ffffff;
+}
+
+/* Date Input Control */
+.form-date-control {
+    font-family: inherit;
+    font-size: 16px;
+    height: 48px;
+    min-height: 48px;
+    width: 100%;
+    background-color: #ffffff;
+    border: 1px solid rgba(30, 23, 96, 0.2);
+    border-radius: 12px;
+    padding: 0 16px;
+    color: var(--text-body, #3F3B5C);
+    box-sizing: border-box;
+    color-scheme: light;
+    cursor: text;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-date-control:focus,
+.form-date-control:focus-visible {
+    outline: none !important;
+    border-color: var(--indigo-600, #4A3FC0) !important;
+    box-shadow: 0 0 0 2px var(--indigo-600, #4A3FC0) !important;
+}
+
+.form-date-control:user-invalid {
+    border-color: var(--maroon-600, #A3234B) !important;
+}
+
+.form-date-control::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.8;
+    filter: invert(12%) sepia(50%) saturate(3000%) hue-rotate(225deg);
+    padding: 4px;
+}
+
+/* Helper message */
+.form-field-helper-msg {
+    font-size: 13px;
+    color: var(--text-muted, #6B6787);
+    margin-top: 6px;
+    line-height: 1.4;
+}
+
+/* Error message */
+.form-field-error-msg {
+    font-size: 13px;
+    color: var(--maroon-700, #8B1A3D);
+    margin-top: 6px;
+    line-height: 1.4;
+    font-weight: 500;
+}
+
+
+/* ==========================================================================
+   PHOTO UPLOAD BLOCK (Dashed Border, 96x96 Preview Tile, Custom Trigger)
+   ========================================================================== */
+.form-file-upload-block {
+    border: 1px dashed rgba(30, 23, 96, 0.3);
+    background-color: var(--cream-50, #FFFAF3);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    margin-top: 4px;
+}
+
+@media (max-width: 640px) {
+    .form-file-upload-block {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+}
+
+.form-file-upload-block:focus-within {
+    border-color: var(--indigo-600, #4A3FC0) !important;
+    box-shadow: 0 0 0 2px var(--indigo-600, #4A3FC0) !important;
+}
+
+/* 96x96 Preview Tile */
+.form-file-preview-tile {
+    width: 96px;
+    height: 96px;
+    min-width: 96px;
+    min-height: 96px;
+    border-radius: 12px;
+    background-color: var(--indigo-100, #E8E6FA);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(30, 23, 96, 0.1);
+    flex-shrink: 0;
+}
+
+.form-file-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.form-file-empty-icon {
+    font-size: 32px;
+    line-height: 1;
+    color: var(--indigo-800, #2B2185);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Actions Column beside Preview */
+.form-file-actions-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+.form-file-trigger-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.form-file-trigger-btn {
+    min-height: 44px;
+    height: 44px;
+    padding: 0 20px;
+    border-radius: 12px;
+    border: 2px solid var(--indigo-800, #2B2185);
+    background-color: transparent;
+    color: var(--indigo-800, #2B2185);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    user-select: none;
+    text-decoration: none;
+}
+
+.form-file-trigger-btn:hover {
+    background-color: var(--indigo-800, #2B2185);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.form-file-trigger-btn:focus-visible {
+    outline: 2px solid var(--indigo-600, #4A3FC0);
+    outline-offset: 2px;
+}
+
+.form-file-chosen-name {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 15px;
+    color: var(--text-body, #3F3B5C);
+    word-break: break-all;
+    line-height: 1.4;
+    font-weight: 500;
+}
+
+.form-file-chosen-name.is-empty {
+    color: var(--text-muted, #6B6787);
+}
+
+/* Visually Hidden Real File Input */
+.visually-hidden-file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ==========================================================================
+   SUBMIT ROW & PRIMARY BUTTON
+   ========================================================================== */
+.form-submit-row {
+    margin-top: 40px;
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.form-submit-btn {
+    min-width: 240px;
+    min-height: 48px;
+    height: 48px;
+    padding: 0 32px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 12px;
+    background-color: var(--maroon-700, #8B1A3D);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(139, 26, 61, 0.2);
+}
+
+.form-submit-btn:hover:not(:disabled) {
+    background-color: var(--maroon-900, #5E0F26);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(94, 15, 38, 0.3);
+}
+
+.form-submit-btn:focus-visible {
+    outline: 2px solid var(--indigo-600, #4A3FC0);
+    outline-offset: 2px;
+}
+
+.form-submit-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.form-submit-arrow-icon {
+    font-size: 18px;
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
+
+.form-submit-btn:hover:not(:disabled) .form-submit-arrow-icon {
+    transform: translateX(3px);
+}
+
+@media (max-width: 768px) {
+    .form-submit-row {
+        justify-content: stretch;
+    }
+    .form-submit-btn {
+        width: 100%;
+        min-width: 100%;
+    }
+}
+
+
+/* ==========================================================================
+   STATUS & GATE CARD STYLES (VerificationPending, AwaitingApproval)
+   ========================================================================== */
+.form-status-container {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 16px 0;
+}
+
+.form-status-icon-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: var(--indigo-100, #E8E6FA);
+    color: var(--indigo-800, #2B2185);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px auto;
+    font-size: 28px;
+    box-shadow: 0 4px 12px rgba(30, 23, 96, 0.08);
+}
+
+.form-status-title {
+    font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--indigo-900, #1E1760);
+    margin: 0 0 16px 0;
+    line-height: 1.3;
+}
+
+.form-status-text {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-body, #3F3B5C);
+    margin: 0 0 32px 0;
+}
+
+.form-status-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+    .form-status-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    .form-status-actions .btn-shared {
+        width: 100%;
+    }
+}
+
+/* ==========================================================================
+   SHARED BUTTON PRIMITIVES
+   - Min height 44px
+   - 12px radius
+   - Hover lift (-2px translateY)
+   - Primary: maroon-700 bg + white text (hover maroon-900)
+   - Secondary: 2px indigo-800 outline + indigo-800 text
+   - Ghost-light: 1px white/40 border + white text
+   ========================================================================== */
+.btn-shared {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    height: 44px;
+    padding: 0 24px;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.btn-shared.btn-primary {
+    background-color: var(--maroon-700, #8B1A3D);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 4px 14px rgba(139, 26, 61, 0.2);
+}
+
+.btn-shared.btn-primary:hover:not(:disabled) {
+    background-color: var(--maroon-900, #5E0F26);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(94, 15, 38, 0.3);
+}
+
+.btn-shared.btn-secondary {
+    background-color: transparent;
+    color: var(--indigo-800, #2B2185);
+    border: 2px solid var(--indigo-800, #2B2185);
+}
+
+.btn-shared.btn-secondary:hover:not(:disabled) {
+    background-color: var(--indigo-800, #2B2185);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.btn-shared.btn-ghost-light {
+    background-color: transparent;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.btn-shared.btn-ghost-light:hover:not(:disabled) {
+    background-color: rgba(255, 255, 255, 0.12);
+    border-color: #ffffff;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.btn-shared:focus-visible {
+    outline: 2px solid var(--indigo-600, #4A3FC0);
+    outline-offset: 2px;
+}
+
+.btn-shared.btn-ghost-light:focus-visible {
+    outline: 2px solid var(--cream-300, #F9D29A);
+    outline-offset: 2px;
+}
+
+.btn-shared:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
